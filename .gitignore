@@ -1,0 +1,7 @@
+book/
+tests/*.log
+tests/tmp/
+tests/tmp*/
+__pycache__/
+*.pyc
+.worktrees/

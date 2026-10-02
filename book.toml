@@ -1,0 +1,28 @@
+[book]
+authors = ["俞甲子", "石凡", "潘愛民"]
+language = "zh-TW"
+multilingual = false
+src = "src"
+title = "程式設計師的自我修養：連結、載入與函式庫"
+
+[build]
+create-missing = false
+
+[output.html]
+theme = "theme"
+default-theme = "rust"
+no-section-label = true
+
+[output.html.search]
+enable = true
+limit-results = 15
+teaser-word-count = 10
+boost-title = 2
+boost-hierarchy = 1
+boost-paragraph = 1
+heading-split-level = 4
+index-limit-mb = 100
+
+[output.html.fold]
+enable = true
+level = 1
