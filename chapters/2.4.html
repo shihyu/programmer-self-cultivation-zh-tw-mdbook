@@ -1,0 +1,243 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>2.4 模組拚裝——靜態連結 - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="24-模組拚裝靜態連結"><a class="header" href="#24-模組拚裝靜態連結">2.4 模組拚裝——靜態連結</a></h2>
+<p>程式設計的模組化是人們一直在追求的目標，因為當一個系統十分複雜的時候，我們不得不將一個複雜的系統逐步分割成小的系統以達到各個突破的目的。一個複雜的軟體也如此，人們把每個原始碼模組獨立地編譯，然後按照需要將它們“組裝”起來，這個組裝模組的過程就是連結（Linking）。連結的主要內容就是把各個模組之間相互引用的部分都處理好，使得各個模組之間能夠正確地銜接。連結器所要做的工作其實跟前面所描述的“程式設計師人工調整地址”本質上沒什麼兩樣，只不過現代的高階語言的諸多特性和功能，使得編譯器、連結器更為複雜，功能更為強大，但從原理上來講，它的工作無非就是把一些指令對其他符號地址的引用加以修正。連結過程主要包括了地址和空間分配（Address and Storage Allocation）、符號決議（Symbol Resolution）和重定位（Relocation）等這些步驟。</p>
+<p>符號決議有時候也被叫做符號繫結（Symbol Binding）、名稱繫結（Name Binding）、名稱決議（Name Resolution），甚至還有叫做地址繫結（Address Binding）、指令繫結（Instruction Binding）的，大體上它們的意思都一樣，但從細節角度來區分，它們之間還是存在一定區別的，比如“決議”更傾向於靜態連結，而“繫結”更傾向於動態連結，即它們所使用的範圍不一樣。在靜態連結，我們將統一稱為符號決議。</p>
+<p>最基本的靜態連結過程如圖2-8所示。每個模組的原始碼檔案（如.c）檔案經過編譯器編譯成目的檔（Object File，一般副檔名為.o或.obj），目的檔和庫（Library）一起連結</p>
+<p><span><img alt="" src="../images/2-8.jpg"/></span> <span>圖2-8 連結過程 …</span></p>
+<p>形成最終執行檔。而最常見的庫就是執行時庫（Runtime Library），它是支援程式執行的基本函式的集合。庫其實是一組目的檔的包，就是一些最常用的程式碼編譯成目的檔後打包存放。關於庫本書的後面還會再詳細分析。</p>
+<p>我們認為對於Object檔案沒有一個很合適的中文名稱，把它叫做中間目的檔比較合適，簡稱為目的檔，所以本書後面的內容都將稱Object檔案為目的檔，很多時候我們也把目的檔稱為模組。</p>
+<p>現代的編譯和連結過程也並非想象中的那麼複雜，它還是一個比較容易理解的概念。比如我們在程式模組main.c中使用另外一個模組func.c中的函式foo()。我們在main.c模組中每一處呼叫foo的時候都必須確切知道foo這個函式的地址，但是由於每個模組都是單獨編譯的，在編譯器編譯main.c的時候它並不知道foo函式的地址，所以它暫時把這些呼叫foo的指令的目標地址擱置，等待最後連結的時候由連結器去將這些指令的目標地址修正。如果沒有連結器，需要我們手工把每個呼叫foo的指令進行修正，則填入正確的foo函式地址。當func.c模組被重新編譯，foo函式的地址有可能改變時，那麼我們在main.c中所有使用到foo的地址的指令將要全部重新調整。這些繁瑣的工作將成為程式設計師的噩夢。使用連結器，你可以直接引用其他模組的函式和全域性變數而無須知道它們的地址，因為連結器在連結的時候，會根據你所引用的符號 foo，自動去相應的func.c模組查詢foo的地址，然後將main.c模組中所有引用到foo的指令重新修正，讓它們的目標地址為真正的foo函式的地址。這就是靜態連結的最基本的過程和作用。</p>
+<p>在連結過程中，對其他定義在目的檔中的函式呼叫的指令需要被重新調整，對使用其他定義在其他目的檔的變數來說，也存在同樣的問題。讓我們結合具體的CPU指令來瞭解這個過程。假設我們有個全域性變數叫做var，它在目的檔A裡面。我們在目的檔B裡面要訪問這個全域性變數，比如我們在目的檔B裡面有這麼一條指令：</p>
+<pre>movl    $0x2a, var</pre>
+<p>這條指令就是給這個var變數賦值0x2a，相當於C語言裡面的語句var = 42。然後我們編譯目的檔B，得到這條指令機器碼，如圖2-9所示。</p>
+<p><span><img alt="" src="../images/2-9.jpg"/></span> <span>圖2-9 傳送指令 …</span></p>
+<p>由於在編譯目的檔B的時候，編譯器並不知道變數var的目標地址，所以編譯器在沒法確定地址的情況下，將這條mov指令的目標地址置為0，等待連結器在將目的檔A和B連結起來的時候再將其修正。我們假設A和B連結後，變數var的地址確定下來為0x1000，那麼連結器將會把這個指令的目標地址部分修改成0x10000。這個地址修正的過程也被叫做重定位（Relocation），每個要被修正的地方叫一個重定位入口（Relocation Entry）。重定位所做的就是給程式中每個這樣的絕對地址引用的位置“打補丁”，使它們指向正確的地址。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/2.3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../chapters/2.5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/2.3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../chapters/2.5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

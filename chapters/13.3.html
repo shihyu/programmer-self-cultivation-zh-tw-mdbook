@@ -1,0 +1,737 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>13.3 C++執行庫實現 - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="133-c執行庫實現"><a class="header" href="#133-c執行庫實現">13.3 C++執行庫實現</a></h2>
+<p>現在Mini CRT已經能夠支援最基本的C語言程式執行了。C++作為相容C語言的擴充套件語言，它的執行庫的實現其實並不複雜，在這一章中將介紹如何為Mini CRT新增對C++語言的一些常用的操作支援。</p>
+<p>通常C++的執行庫都是獨立於C語言執行庫的，比如Linux下C語言執行庫為libc.so/libc.a，而C++執行庫為（libstdc++.so/libstdc++.a）；Windows的C語言執行庫為libcmt.lib/msvcr90.dll，而C++執行庫為libcpmt.lib/msvcp90.dll。一般這些C++的執行庫都是依賴於C執行庫的，它們僅包含對C++的一些特性的支援，比如new/delete、STL、異常處理、流（stream）等。但是它們並不包含諸如入口函式、堆管理、基本檔案操作等這些特性，而這些也是C++執行庫所必需的，比如C++的流和檔案操作依賴於C執行庫的基本檔案操作，所以它必須依賴於C執行庫。</p>
+<pre>// test.cpp
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+using namespace std;
+
+int main(int argc, char* argv[])
+{
+    string* msg = new string(“Hello World”);
+    cout &lt;&lt; *msg &lt;&lt; endl;
+    delete msg;
+    return 0;
+}
+</pre>
+<p>p&gt; 本節中我們將在Mini CRT的基礎上實現一個支援C++的執行庫，當然出於簡單起見，將這個C++執行庫的實現與Mini CRT合並到一起，而不是單獨成為一個庫檔案，也就是說經過這一節對Mini CRT的功能改進，最終編譯出來的minicrt.a/minicrt.lib將支援C++的諸多特性。</p>
+<p>當然，要完整實現一個C++的執行庫是很費事的一件事，C++標準模板庫STL包含了諸如流、容器、演算法、字串等，規模較為龐大。出於演示的目的，我們將對C++的標準庫進行簡化，最終目標是實現一個能夠成功執行如下C++程式程式碼的執行庫：</p>
+<p>上面這段程式看似簡單，實際上它用到了C++執行庫的諸多功能，我們將所用到的特性列舉如下：</p>
+<p>string類的實現。</p>
+<p>stream類的實現，包括操縱符（Manupilator）（endl）。</p>
+<p>全域性物件構造和析構（cout）。</p>
+<p>new/delete。</p>
+<p>在開始本節之前，還是按照前面Mini CRT實現時的做法：在進入具體主題之前先列舉一些實現的原則。在實現Mini CRT對C++的支援時，我們遵循如下原則：</p>
+<p>HelloWorld程式無須用到的功能就不實現，比如異常。</p>
+<p>盡量簡化設計，盡量符合C++標準庫的規範。</p>
+<p>對於可以直接在標頭檔實現的模組盡量在標頭檔中實現，以免諸多的類、函式的宣告和定義造成程式碼量膨脹，不便於演示。</p>
+<p>與前面的Mini CRT實現一樣，執行庫程式碼要做到可以在Windows和Linux上同時執行，因此對於平台相關部分要使用條件編譯分別實現。雖然C++執行庫幾乎沒有與系統相關的部分（全域性構造和析構除外），C執行庫已經將大部分系統相關部分封裝成C標準庫介面，C++執行庫只需要要呼叫這些介面即可。</p>
+<p>另外值得一提的是，模板是不需要執行庫支援的，它的實現依賴於編譯器和連結器，對執行庫基本上沒有要求。</p>
+<p>13.3.1 new與delete</p>
+<p>首先從比較簡單的模組入手，全域性new/delete操作的實現應該是最簡單的部分。我們知道，new操作的功能是從堆上分配一塊物件大小的空間，然後執行物件的初始化函式將這個空間地址返回；而delete則是與new相反的操作，它首先執行物件的解構函式，然後釋放堆空間。</p>
+<p>那麼new和delete究竟在C++中是一個什麼樣的地位呢？它們是編譯器內建的操作嗎？它們跟執行庫有什麼關係呢？為瞭解釋這些問題，首先來看一小段程式碼：</p>
+<pre>class C {
+};
+
+int main()
+{
+    C* c = new C();
+    return 0;
+}
+</pre>
+<p>假如用GCC編譯這段程式碼並且反組譯，將會看到new操作的實現：</p>
+<pre>$g++ -c hello.c
+$objdump -dr hello.o
+
+hello.o:     file format elf32-i386
+
+Disassembly of section .text:
+
+00000000 &lt;main&gt;:
+   0:   8d 4c 24 04             lea    0x4(%esp),%ecx
+   4:   83 e4 f0                and    $0xfffffff0,%esp
+   7:   ff 71 fc                pushl  -0x4(%ecx)
+   a:   55                        push   %ebp
+   b:   89 e5                   mov    %esp,%ebp
+   d:   51                      push   %ecx
+   e:   83 ec 14                sub    $0x14,%esp
+  11:   c7 04 24 01 00 00 00  movl   $0x1,(%esp)
+  18:   e8 fc ff ff ff          call   19 &lt;main+0x19&gt;
+                        19: R_386_PC32  _Znwj
+  1d:   89 45 f8              mov    %eax,-0x8(%ebp)
+  20:   b8 00 00 00 00        mov    $0x0,%eax
+  25:   83 c4 14                add    $0x14,%esp
+  28:   59                      pop    %ecx
+  29:   5d                      pop    %ebp
+  2a:   8d 61 fc                lea    -0x4(%ecx),%esp
+  2d:   c3                      ret
+</pre>
+<p>可以看到，new操作的實現實際上是呼叫了一個叫做<code>_Znwj</code>的函式，如果用c++filt將這個符號反修飾（Demangle），可以看到它的真面目：</p>
+<pre>$c++filt _Znwj
+operator new(unsigned int)
+</pre>
+<p>可以看到<code>_Znwj</code>實際上是一個叫做operator new的函式，這也是我們在C++中熟悉的運算子函式。在C++中，運算子實際上是一種特殊的函式，叫做運算子函式，一般new運算子函式被定義為：</p>
+<pre>void* operator new(unsigned int size);</pre>
+<p>除了new、delete這樣的運算子以外，+、-、*、%等都可以被認為是運算子，這些運算子都有相對應的運算子函式。對於operator new函式來說，它的引數size是指需要申請的空間大小，一般是指new物件的大小，而返回值是申請的堆地址。delete運算子函式的引數是物件的地址，它沒有返回值。</p>
+<p>既然new/delete的實現是相應的運算子函式，那麼，如果要實現new/delete，就只需要要實現這兩個函式就可以了。而這兩個函式的主要功能是申請和釋放堆空間，這再容易不過了，因為在Mini CRT中已經實現了堆空間的申請和釋放函式：malloc和free。於是new/delete的實現變得尤為簡單，它們的實現原始碼如清單13-8所示。</p>
+<p>清單13-8 new_delete.cpp</p>
+<pre>//new_delete.cpp
+extern "C" void* malloc(unsigned int);
+extern "C" void free(void*);
+
+void* operator new(unsigned int size)
+{
+    return malloc(size);
+}
+
+void operator delete(void* p)
+{
+    free(p);
+}
+
+void* operator new[](unsigned int size)
+{
+    return malloc(size);
+}
+
+void operator delete[](void* p)
+{
+    free(p);
+}
+</pre>
+<p>在上面程式碼中除了new/delete之外，我們還看到了new[]和delete[]，它們分別是用來申請和釋放物件陣列的，在這裡一並予以實現。另外除了申請和釋放堆空間之外，沒有看到任何物件構造和析構的呼叫，其實物件的構造和析構是在new/delete之前/之後由編譯器負責產生相應的程式碼進行呼叫的，new/delete僅僅負責堆空間的申請和釋放，不負責構造和析構。</p>
+<p>在真實的C++執行庫中，new/delete的實現要比上面的複雜一些，它們除了使用malloc/free申請釋放空間之外，還支援new_handler在申請失敗時給予程式進行補救的機會、還可能會丟擲bad_alloc異常等，由於Mini CRT並不支援異常，所以就省略了這些內容。</p>
+<p>另外值得一提的是，在使用真實的C++執行庫時，也可以使用上面這段程式碼自己實現new/delete，這樣就會將原先C++執行庫的new/delete覆蓋，使得有機會在new/delete時記錄物件的空間分配和釋放，可以實現一些特殊的功能，比如檢查程式是否有記憶體洩露。這種做法往往被稱為全域性new/delete運算子過載（Global new/delete operator overloading）。除了過載全域性new/delete運算子之外，也可以過載某個類的new/delete，這樣可以實現一些特殊的需求，比如指定物件申請地址（Replacement new），或者使用自己實現的堆演算法對某個物件的申請/釋放進行最佳化，從而提高程式的效能等，這方面的討論在C++領域已經非常深入了，在此我們不一一展開了。</p>
+<p>13.3.2 C++全域性構造與析構</p>
+<p>C++全域性構造與析構的實現是有些特殊的，它與編譯器、連結器的關係比較緊密。正如已經在第10章中所描述的一樣，它們的實現是依賴於編譯器、連結器和執行庫三者共同的支援和協作的。Mini CRT對於全域性物件構造與析構的實現也是基於第10章中描述的Glibc和MSVC CRT的，本質上沒有多大的區別，僅僅是將它們簡化到最簡程度，保留本質而去除了一些繁瑣的細節。</p>
+<p>透過第10章的分析我們可以得知，C++全域性構造和析構的實現在Glibc和MSVC CRT中的原理十分相似，建構函式主要實現的是依靠特殊的段合並後形成建構函式陣列，而析構則依賴於<code>atexit()</code>函式。這一節中將主要關注全域性構造的實現，而把<code>atexit()</code>的實現留到下一節中。</p>
+<p>全域性構造對於MSVC來說，主要實現兩個段“.CRT$XCA”和“.CRT$XCZ”，然後定義兩個函式指標分別指向它們；而對於GCC來說，需要定義“.ctor”段的起始部分和結束部分，然後定義兩個函式指標分別指向它們。真正的構造部分則只要由一個迴圈將這兩個函式指標指向的所有函式都呼叫一遍即可。</p>
+<p>MSVC CRT與Glibc在實現上稍有不同的是，MSVC CRT只需要一個目的檔就可以實現全域性構造，編譯器會按照段名將所有的輸入段排序；而Glibc需要兩個檔案：ctrbegin.o和crtend.o，這兩個檔案在編譯時必須位於輸入檔案的開始和結尾部分，所有在這兩個檔案之外的輸入檔案中的“.ctor”段就不會被正確地合並。全域性構造和析構的實現程式碼如清單13-9所示。</p>
+<p>清單13-9 ctors.cpp</p>
+<pre>// ctors.cpp
+typedef void (*init_func)(void);
+#ifdef WIN32
+#pragma section(".CRT$XCA",long,read)
+#pragma section(".CRT$XCZ",long,read)
+
+__declspec(allocate(".CRT$XCA")) init_func ctors_begin[] = { 0 };
+__declspec(allocate(".CRT$XCZ")) init_func ctors_end[] = { 0 };
+
+extern "C" void do_global_ctors()
+{
+  init_func* p = ctors_begin;
+  while ( p &lt; ctors_end )
+    {
+        if (*p != 0)
+            (**p)();
+        ++p;
+    }
+}
+#else
+
+void run_hooks();
+extern "C" void do_global_ctors()
+{
+    run_hooks();
+}
+#endif
+</pre>
+<p>在.ctors.cpp中包含了Windows的全域性構造的所有實現程式碼，但Linux的全域性構造還需要crtbegin和crtend兩個部分。這兩個檔案內容如清單13-10、清單13-11所示。</p>
+<p>清單13-10 crtbegin.cpp</p>
+<pre>///crtbegin.cpp
+#ifndef WIN32
+typedef void (*ctor_func)(void);
+
+ctor_func ctors_begin[1] __attribute__ ((section(".ctors"))) =
+{
+    (ctor_func) -1
+};
+
+void run_hooks()
+{
+    const ctor_func* list = ctors_begin;
+    while ((int)*++list != -1)
+        (**list)();
+}
+#endif 
+</pre>
+<p>清單13-11 crtend.cpp</p>
+<pre>//crtend.cpp
+#ifndef WIN32
+typedef void (*ctor_func)(void);
+ctor_func crt_end[1] __attribute__ ((section(".ctors"))) = 
+{
+    (ctor_func) -1
+};
+#endif
+</pre>
+<p>13.3.3 atexit實現</p>
+<p><code>atexit()</code>的用法十分簡單，即由它註冊的函式會在程式退出前，在<code>exit()</code>函式中被呼叫。<code>atexit()</code>和<code>exit()</code>函式實際上並不屬於C++執行庫的一部分，它們是C語言執行庫的一部分。在前面實現Mini CRT時我們在<code>exit()</code>函式的實現中預留了對<code>atexit()</code>的支援。</p>
+<p>本來可以不實現<code>atexit()</code>的，畢竟它不是非常重要的CRT函式，但是在這裡不得不實現atexit的原因是：所有全域性物件的解構函式——不管是Linux還是Windows——都是透過atexit或其類似函式來註冊的，以達到在程式退出時執行的目的。</p>
+<p>實現它的基本思路也很簡單，就是使用一個連結串列把所有註冊的函式儲存起來，到<code>exit()</code>時將連結串列遍曆一遍，執行其中所有的回撥函式，Windows版的atexit的確可以按照這個思路實現。</p>
+<p>Linux版的atexit要複雜一些，導致這個的問題的原因是GCC實現全域性物件的析構不是呼叫的atexit，而是呼叫的<code>__cxa_atexit</code>。這個函式在前面的全域性構造和析構中也碰到過，它不是C語言標準庫函式，它是GCC實現的一部分。為了相容GCC，Mini CRT不得不實現它。它的定義與<code>atexit()</code>有所不同的是<code>，__cxa_atexit</code>所接受的引數型別和atexit不同：</p>
+<pre>typedef void (*cxa_func_t )( void* );
+typedef void (*atexit_func_t )( void );
+int __cxa_atexit(cxa_func_t func, void* arg, void*);
+int atexit(atexit_func_t func);
+</pre>
+<p><code>__cxa_atexit</code>所接受的函式指標必須有一個<code>void*</code>型指標作為引數，並且呼叫<code>__cxa_atexit</code>的時候，這個引數<code>(void* arg)</code>也要隨著記錄下來，等到要執行的時候再傳遞進去。也就是說<code>，__cxa_atexit()</code>註冊的回撥函式是帶一個引數的，我們必須把這個引數也記下來。</p>
+<p><code>__cxa_atexit</code>的最後一個引數可以忽略，在這裡不會用到。</p>
+<p>於是在設計連結串列時要考慮到這一點，連結串列的節點必須能夠區分是否是<code>atexit()</code>函式<code>__cxa_atexit()</code>註冊的函式，如果是<code>__cxa_atexit()</code>註冊的函式，還要把回撥函式的引數儲存下來。我們定義連結串列節點的結構如下：</p>
+<pre>typedef struct _func_node
+{
+    atexit_func_t func;
+    void* arg;
+    int is_cxa;
+    struct _func_node* next;
+} func_node;
+</pre>
+<p>其中<code>is_cxa</code>成員如果不為0，則表示這個節點是由<code>__cxa_atexit()</code>註冊的回撥函式，arg成員表示相應的引數。atexit的實現程式碼如清單13-12所示。</p>
+<p>清單13-12 atexit.c</p>
+<pre>// atexit.c
+#include "minicrt.h"
+
+typedef struct _func_node
+{
+    atexit_func_t func;
+    void* arg;
+    int is_cxa;
+    struct _func_node* next;
+} func_node;
+
+static func_node* atexit_list = 0;
+
+int register_atexit(atexit_func_t func, void* arg, int is_cxa)
+{
+    func_node* node;
+    if (!func) return -1;
+
+    node = (func_node*)malloc(sizeof(func_node));
+    
+    if(node == 0) return -1;
+
+    node-&gt;func = func;
+    node-&gt;arg = arg;
+    node-&gt;is_cxa = is_cxa;
+    node-&gt;next = atexit_list;
+    atexit_list = node;
+    return 0;
+}
+
+#ifndef WIN32
+typedef void (*cxa_func_t )( void* );
+int __cxa_atexit(cxa_func_t func, void* arg, void* unused)
+{
+    return register_atexit((atexit_func_t)func, arg, 1);
+}
+#endif
+
+int atexit(atexit_func_t func)
+{
+    return register_atexit(func, 0, 0);
+}
+
+void mini_crt_call_exit_routine()
+{
+    func_node* p = atexit_list;
+    for(; p != 0; p = p-&gt;next)
+    {
+        #ifdef WIN32
+            p-&gt;func();
+        #else
+        if (p-&gt;is_cxa)
+            ((cxa_func_t)p-&gt;func)(p-&gt;arg);
+        else
+            p-&gt;func();
+        #endif
+        free(p);
+    }
+    atexit_list = 0;
+}
+</pre>
+<p>值得一提的是，在註冊函式時，被註冊的函式是插入到列表頭部的，而最後<code>mini_crt_call_exit_routine()</code>是從頭部開始遍曆的，於是由<code>atexit()</code>或<code>__cxa_atexit()</code>註冊的函式是按照先註冊後呼叫的順序，這符合解構函式的規則，因為先構造的全域性物件應該後析構。</p>
+<p>13.3.4 入口函式修改</p>
+<p>由於增加了全域性構造和析構的支援，那麼需要對Mini CRT的入口函式和<code>exit()</code>函式進行修改，把對<code>do_global_ctors()</code>和<code>mini_crt_call_exit_routine()</code>的呼叫加入到<code>entry()</code>和<code>exit()</code>函式中去。修改後的entry.c如下（省略一部分未修改的內容）：</p>
+<pre>//entry.c
+…
+void mini_crt_entry(void)
+{
+…
+    if (!mini_crt_heap_init())
+        crt_fatal_error("heap initialize failed");
+
+    if (!mini_crt_io_init())
+        crt_fatal_error("IO initialize failed");
+    
+    do_global_ctors();
+
+    ret = main(argc,argv);
+    exit(ret);
+}
+
+void exit(int exitCode)
+{
+    mini_crt_call_exit_routine();
+#ifdef WIN32
+    ExitProcess(exitCode);
+#else
+    asm( "movl %0,%%ebx \n\t"
+         "movl $1,%%eax \n\t"
+         "int $0x80     \n\t" 
+         "hlt           \n\t"::"m"(exitCode));
+#endif
+}
+</pre>
+<p>13.3.5 stream與string</p>
+<p>C++的Hello World裡面一般都會用到cout和string，以展示C++的特性。流和字串是C++ STL的最基本的兩個部分，我們在這一節中為Mini CRT增加string和stream的實現，在有了流和字串之後，Mini CRT將最終宣告完成，可以考慮將它重新命名為Mini CRT++ ?。</p>
+<p>當然，在真正的STL實現中，string和stream的實現十分複雜，不僅有強大的模板定製功能、緩衝，龐大的繼承體係及一係列輔助類。我們在實現時還是以展示和剖析為最基本的目的，簡化一切能夠簡化的內容。string和stream的實現將遵循下列原則。</p>
+<p>不支援模板定製，即這兩個類僅支援char字串型別，不支援自定義分配器等，沒有<code>basic_string</code>模板類。</p>
+<p>流物件僅實現ofstream，且沒有繼承體係，即沒有ios_base、stream、ostream、fstream等類似的相關類。</p>
+<p>流物件沒有內建的緩衝功能，即沒有<code>stream_buffer</code>類支援。</p>
+<p>cout作為ofstream的一個例項，它的輸出檔案是標準輸出。</p>
+<p>stream和string類的實現用到了不少C++語言的特性，已經一定程度上偏離了本書所要描述的主題，因此在此僅將它們的實現原始碼列出，而不做更多的詳細分析。有興趣的讀者可以參考C++ STL的相關實現的資料，如果對C++語言本身不熟悉，也可以跳過這一節，這並不影響對Mini CRT整體實現的理解。string和iostream的實現如清單13-13、清單13-14、清單13-15所示。</p>
+<p>清單13-13 string</p>
+<pre>// string
+
+namespace std {
+
+    class string
+    {
+        unsigned len;
+        char* pbuf;
+        
+    public:
+        explicit string(const char* str);
+        string(const string&amp;);
+        ~string();
+        string&amp; operator=(const string&amp;);
+        string&amp; operator=(const char* s);
+        const char&amp; operator[](unsigned idx) const;
+        char&amp; operator[](unsigned idx);
+        const char* c_str() const;
+        unsigned length() const;
+        unsigned size() const;
+    };
+
+    string::string(const char* str) :
+        len (0), pbuf(0)
+    {
+        *this = str;
+    }
+
+    string::string(const string&amp; s) : 
+        len(0), pbuf(0)
+    {
+        *this = s;
+    }
+    string::~string()
+    {
+        if(pbuf != 0) {
+            delete[] pbuf;
+            pbuf = 0;
+        }
+    }
+
+    string&amp; string::operator=(const string&amp; s)
+    {
+        if (&amp;s == this)
+            return *this;
+        this-&gt;~string();
+        len = s.len;
+        pbuf = strcpy(new char[len + 1], s.pbuf);
+        return *this;
+    }
+
+
+    string&amp; string::operator=(const char* s)
+    {
+        this-&gt;~string();
+        len = strlen(s);
+        pbuf = strcpy(new char[len + 1], s);
+        return *this;
+    }
+
+    const char&amp; string::operator[](unsigned idx) const
+    {
+        return pbuf[idx];
+    }
+    char&amp; string::operator[](unsigned idx)
+    {
+        return pbuf[idx];
+    }
+    const char* string::c_str() const
+    {
+        return pbuf;
+    }
+    unsigned string::length() const
+    {
+        return len;
+    }
+    unsigned string::size() const
+    {
+        return len;
+    }
+    ofstream&amp; operator&lt;&lt;(ofstream&amp; o, const string&amp; s)
+    {
+        return o &lt;&lt; s.c_str();
+    }
+}
+</pre>
+<p>清單13-14 iostream</p>
+<pre>// iostream
+#include "minicrt.h"
+
+namespace std {
+
+class ofstream
+{
+    protected:
+        FILE* fp;
+        ofstream(const ofstream&amp;);
+    public:
+        enum openmode{in = 1, out = 2, binary = 4, trunc = 8};
+
+        ofstream();
+        explicit ofstream(const char *filename, ofstream::openmode md = ofstream::out);
+        ~ofstream();
+        ofstream&amp; operator&lt;&lt;(char c);
+        ofstream&amp; operator&lt;&lt;(int n);
+        ofstream&amp; operator&lt;&lt;(const char* str);
+        ofstream&amp; operator&lt;&lt;(ofstream&amp; (*)(ofstream&amp;));
+        void open(const char *filename, ofstream::openmode md = ofstream::out); 
+        void close();
+        ofstream&amp; write(const char *buf, unsigned size);
+};
+
+inline ofstream&amp; endl(ofstream&amp; o)
+{
+    return o &lt;&lt; '\n';
+}
+
+class stdout_stream : public ofstream {
+public:
+    stdout_stream();
+};
+
+extern stdout_stream cout;
+}
+</pre>
+<p>清單13-15 iostream.cpp</p>
+<pre>// iostream.cpp
+#include "minicrt.h"
+#include "iostream"
+
+#ifdef WIN32
+#include &lt;Windows.h&gt;
+#endif
+
+namespace std {
+
+stdout_stream::stdout_stream() : ofstream() 
+{
+        fp = stdout;
+}
+
+stdout_stream cout;
+
+ofstream::ofstream() : fp(0)
+{
+}
+
+ofstream::ofstream(const char *filename, ofstream::openmode md) : fp(0)
+{
+    open(filename, md);
+    
+}
+ofstream::~ofstream()
+{
+    close();
+}
+ofstream&amp; ofstream::operator&lt;&lt;(char c)
+{
+    fputc(c, fp);
+    return *this;
+}
+ofstream&amp; ofstream::operator&lt;&lt;(int n)
+{
+    fprintf(fp, "%d", n);
+    return *this;
+}
+ofstream&amp; ofstream::operator&lt;&lt;(const char* str)
+{
+    fprintf(fp, "%s", str);
+    return *this;
+}
+
+ofstream&amp; ofstream::operator&lt;&lt;(ofstream&amp; (*manip)(ofstream&amp;))
+{
+    return manip(*this);
+}
+
+void ofstream::open(const char *filename, ofstream::openmode md)
+{
+    char mode[4];
+    close();
+    switch (md)
+    {
+    case out | trunc:
+        strcpy(mode, "w");
+        break;
+    case out | in | trunc:
+        strcpy(mode, "w+");
+    case out | trunc | binary:
+        strcpy(mode, "wb");
+        break;
+    case out | in | trunc | binary:
+        strcpy(mode, "wb+");
+    }
+    fp = fopen(filename, mode);
+}
+void ofstream::close()
+{
+    if (fp)
+    {
+        fclose(fp);
+        fp = 0;
+    }
+}
+
+ofstream&amp; ofstream::write(const char *buf, unsigned size)
+{
+    fwrite(buf, 1, size, fp);
+    return *this;
+}
+
+}
+</pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/13.2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../chapters/13.4.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/13.2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../chapters/13.4.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

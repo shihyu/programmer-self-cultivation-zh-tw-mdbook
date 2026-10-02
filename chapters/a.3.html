@@ -1,0 +1,337 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>A.3 常用開發工具命令列參考 - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="a3-常用開發工具命令列參考"><a class="header" href="#a3-常用開發工具命令列參考">A.3 常用開發工具命令列參考</a></h2>
+<p>A.3.1 gcc，GCC編譯器</p>
+<p>-E：只進行預處理並把預處理結果輸出。</p>
+<p>-c：只編譯不連結。</p>
+<p>-o &lt;filename&gt;：指定輸出檔名。</p>
+<p>-S：輸出編譯後的組合語言程式碼檔案。</p>
+<p>-I：指定標頭檔路徑。</p>
+<p>-e name：指定name為程式入口地址。</p>
+<p>-ffreestanding：編譯獨立的程式，不會自動連結C執行庫、啟動檔案等。</p>
+<p>-finline-functions,-fno-inline-functions：啟用/關閉行內函數。</p>
+<p>-g：在編譯結果中加入除錯資訊，-ggdb就是加入GDB偵錯程式能夠識別的格式。</p>
+<p>-L &lt;directory&gt;：指定連結時查詢路徑，多個路徑之間用冒號隔開。</p>
+<p>-nostartfiles：不要連結啟動檔案，比如crtbegin.o、crtend.o。</p>
+<p>-nostdlib：不要連結標準庫檔案，主要是C執行庫。</p>
+<p>-O0：關閉所有最佳化選項。</p>
+<p>-shared：產生共享物件檔案。</p>
+<p>-static：使用靜態連結。</p>
+<p>-Wall：對原始碼中的多數編譯警告進行啟用。</p>
+<p>-fPIC：使用地址無關程式碼模式進行編譯。</p>
+<p>-fPIE：使用地址無關程式碼模式編譯執行檔。</p>
+<p>-XLinker &lt;option&gt;：把option傳遞給連結器。</p>
+<p>-Wl &lt;option&gt;：把option傳遞給連結器，與上面的選項類似。</p>
+<p>-fomit-frame-pointer：禁止使用EBP作為函式幀指標。</p>
+<p>-fno-builtin：禁止GCC編譯器內建函式。</p>
+<p>-fno-stack-protector：是指關閉堆疊保護功能。</p>
+<p>-ffunction-sections：將每個函式編譯到獨立的程式碼段。</p>
+<p>-fdata-sections：將全域性/靜態變數編譯到獨立的資料段。</p>
+<p>A.3.2 ld，GNU連結器</p>
+<p>-static：靜態連結。</p>
+<p>-l&lt;libname&gt;：指定連結某個庫。</p>
+<p>-e name：指定name為程式入口。</p>
+<p>-r：合並目的檔，不進行最終連結。</p>
+<p>-L &lt;directory&gt;：指定連結時查詢路徑，多個路徑之間用冒號隔開。</p>
+<p>-M：將連結時的符號和地址輸出成一個對映檔案。</p>
+<p>-o：指定輸出檔名。</p>
+<p>-s：清除輸出檔案中的符號資訊。</p>
+<p>-S：清除輸出檔案中的除錯資訊。</p>
+<p>-T &lt;scriptfile&gt;：指定連結指令碼檔案。</p>
+<p>-version-script &lt;file&gt;：指定符號版本指令碼檔案。</p>
+<p>-soname &lt;name&gt;：指定輸出共用函式庫的SONAME。</p>
+<p>-export-dynamic：將全域性符號全部匯出。</p>
+<p>-verbose：連結時輸出詳細資訊。</p>
+<p>–rpath &lt;path&gt;：指定連結時庫查詢路徑。</p>
+<p>A.3.3 objdump，GNU目的檔執行檔檢視器</p>
+<p>-a：列舉.a檔案中所有的目的檔。</p>
+<p>-b bfdname：指定BFD名。</p>
+<p>-C：對於C++符號名進行反修飾（Demangle）。</p>
+<p>-g：顯示除錯資訊。</p>
+<p>-d：對包含機器指令的段進行反組譯。</p>
+<p>-D：對所有的段進行反組譯。</p>
+<p>-f：顯示目的檔檔案頭。</p>
+<p>-h：顯示段表。</p>
+<p>-l：顯示行號資訊。</p>
+<p>-p：顯示專有頭部資訊，具體內容取決於檔案格式。</p>
+<p>-r：顯示重定位資訊。</p>
+<p>-R：顯示動態連結重定位資訊。</p>
+<p>-s：顯示檔案所有內容。</p>
+<p>-S：顯示原始碼和反組合語言程式碼（包含-d引數）。</p>
+<p>-W：顯示檔案中包含有DWARF除錯資訊格式的段。</p>
+<p>-t：顯示檔案中的符號表。</p>
+<p>-T：顯示動態連結符號表。</p>
+<p>-x：顯示檔案的所有檔案頭。</p>
+<p>A.3.4 cl，MSVC編譯器</p>
+<p>/c：只編譯不連結。</p>
+<p>/Za：禁止語言擴充套件。</p>
+<p>/link：連結指定的模組或給連結器傳遞引數。</p>
+<p>/Od：禁止最佳化。</p>
+<p>/O2：以執行速度最快為目標最佳化。</p>
+<p>/O1：以最節省空間為目標最佳化。</p>
+<p>/GR或/GR-：開啟或關閉RTTI。</p>
+<p>/Gy：開啟函式級別連結。</p>
+<p>/GS或/GS-：開啟或關閉。</p>
+<p>/Fa[file]：輸出組譯檔案。</p>
+<p>/E：只進行預處理並且把結果輸出。</p>
+<p>/I：指定標頭檔包含目錄。</p>
+<p>/Zi：啟用除錯資訊。</p>
+<p>/LD：編譯產生DLL檔案。</p>
+<p>/LDd：編譯產生DLL檔案（除錯版）。</p>
+<p>/MD：與動態多執行緒版本執行庫MSVCRT.LIB連結。</p>
+<p>/MDd：與除錯版動態多執行緒版本執行庫MSVCRTD.LIB連結。</p>
+<p>/MT：與靜態多執行緒版本執行庫LIBCMT.LIB連結。</p>
+<p>/MTd：與除錯版靜態多執行緒版本執行庫LIBCMTD.LIB連結。</p>
+<p>A.3.5 link，MSVC連結器</p>
+<p>/BASE:address：指定輸出檔案的基地址。</p>
+<p>/DEBUG：輸出除錯模式版本。</p>
+<p>/DEF:filename：指定模組定義檔案.DEF。</p>
+<p>/DEFAULTLIB:library：指定預設執行庫。</p>
+<p>/DLL：產生DLL。</p>
+<p>/ENTRY:symbol：指定程式入口。</p>
+<p>/EXPORT:symbol：指定某個符號為匯出符號。</p>
+<p>/HEAP：指定預設堆大小。</p>
+<p>/LIBPATH:dir：指定連結時庫搜尋路徑。</p>
+<p>/MAP[:filename]：產生連結MAP檔案。</p>
+<p>/NODEFAULTLIB[:library]：禁止預設執行庫。</p>
+<p>/OUT:filename：指定輸出檔名。</p>
+<p>/RELEASE：以發布版本產生輸出檔案。</p>
+<p>/STACK：指定預設棧大小。</p>
+<p>/SUBSYSTEM：指定子系統。</p>
+<p>A.3.6 dumpbin，MSVC的COFF/PE檔案檢視器</p>
+<p>/ALL：顯示所有資訊。</p>
+<p>/ARCHIVEMEMBERS：顯示.LIB檔案中所有目的檔列表。</p>
+<p>/DEPENDENTS：顯示檔案的動態連結依賴關係。</p>
+<p>/DIRECTIVES：顯示連結器指示。</p>
+<p>/DISASM：顯示反組譯。</p>
+<p>/EXPORTS：顯示匯出函式表。</p>
+<p>/HEADERS：顯示檔案頭。</p>
+<p>/IMPORTS：顯示匯入函式表。</p>
+<p>/LINENUMBERS：顯示行號資訊。</p>
+<p>/RELOCATIONS：顯示重定位資訊。</p>
+<p>/SECTION:name ：顯示某個段。</p>
+<p>/SECTION：顯示檔案概要資訊。</p>
+<p>/SYMBOLS：顯示檔案符號表。</p>
+<p>/TLS：顯示執行緒區域性儲存TLS資訊。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/a.2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/a.2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

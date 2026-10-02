@@ -1,0 +1,278 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>8.6 共用函式庫的建立和安裝 - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="86-共用函式庫的建立和安裝"><a class="header" href="#86-共用函式庫的建立和安裝">8.6 共用函式庫的建立和安裝</a></h2>
+<p>8.6.1 共用函式庫的建立</p>
+<p>建立共用函式庫非常簡單，我們在前面已經演示瞭如何建立一個“.so”共享物件。建立共用函式庫的過程跟建立一般的共享物件的過程基本一致，最關鍵的是使用GCC的兩個引數，即<code>“-shared</code>”和<code>“-fPIC</code>”。“-<code>shared</code>”表示輸出結果是共用函式庫型別的<code>；“-fPIC</code>”表示使用地址無關程式碼（Position Independent Code）技術來生產輸出檔案。另外還有一個引數是<code>“-Wl</code>”引數，這個引數可以將指定的引數傳遞給連結器，比如當我們使用<code>“-Wl</code>、-<code>soname</code>、<code>my_soname</code>”時，GCC會將<code>“-soname my_soname</code>”傳遞給連結器，用來指定輸出共用函式庫的SO-NAME。所以我們可以使用如下命令列來生成一個共用函式庫：</p>
+<pre>$gcc –shared –Wl,-soname,my_soname –o library_name source_files library_files</pre>
+<p>如果我們不使用<code>-soname</code>來指定共用函式庫的SO-NAME，那麼該共用函式庫預設就沒有SO-NAME，即使用ldconfig更新SO-NAME的軟連結時，對該共用函式庫也沒有效果。</p>
+<p>比如我們有libfoo1.c和libfoo2.c兩個原始碼檔案，希望產生一個libfoo.so.1.0.0的共用函式庫，這個共用函式庫依賴於libbar1.so和 libbar2.so這兩個共用函式庫，我們可以使用如下命令列：</p>
+<pre>$gcc –shared -fPIC –Wl,-soname,libfoo.so.1 –o libfoo.so.1.0.0 \
+libfoo1.c libfoo2.c \
+-lbar1 -lbar2
+</pre>
+<p>當然我們也可以把編譯和連結的步驟分開，分多步進行：</p>
+<pre>$gcc –c –g –Wall –o libfoo1.o libfoo1.c
+$gcc –c –g –Wall –o libfoo2.o libfoo2.c
+$ld –shared –soname libfoo.so.1 –o libfoo.so.1.0.0 \
+libfoo1.o libfoo2.o –lbar1 –lbar2
+</pre>
+<p>幾個值得注意的事項：</p>
+<p>不要把輸出共用函式庫中的符號和除錯資訊去掉，也不要使用GCC的“-fomit-frame-pointer”選項，這樣做雖然不會導致共用函式庫停止執行，但是會影響除錯共用函式庫，給後面的工作帶來很多麻煩。關於“-fomit-frame-pointer”請參照後面的“函式呼叫和堆疊”這一節。</p>
+<p>在開發過程中，你可能要測試新的共用函式庫，但是你又不希望影響現有的程式正常執行。我們前面提到的LD_LIBRARY_PATH是一個很好的方法，用它可以指定共用函式庫的查詢路徑。還有一種方法是使用連結器的“-rpath”選項（或者GCC的-Wl,-rpath），這種方法可以指定連結產生的目標程式的共用函式庫查詢路徑。比如我們用如下命令列產生一個執行檔：</p>
+<pre>$ld –rpath /home/mylib –o program.out program.o –lsomelib</pre>
+<p>這樣產生的輸出執行檔program.out在被動態連結器載入時，動態連結器會首先在“/home/mylib”查詢共用函式庫。</p>
+<p>預設情況下，連結器在產生執行檔時，只會將那些連結時被其他共享模組引用到的符號放到動態符號表，這樣可以減少動態符號表的大小。也就是說，在共享模組中反向引用主模組中的符號時，只有那些在連結時被共享模組引用到的符號才會被匯出。有一種情況是，當程式使用dlopen()動態載入某個共享模組，而該共享模組須反向引用主模組的符號時，有可能主模組的某些符號因為在連結時沒有被其他共享模組引用而沒有被放到動態符號表裡面，導致了反向引用失敗。ld連結器提供了一個<code>“-export-dynamic</code>”的引數，這個參數列示連結器在生產執行檔時，將所有全域性符號匯出到動態符號表，以防止出現上述問題。我們也可以在GCC中使用<code>“-Wl,-export-dynamic</code>”將該引數傳遞給連結器。</p>
+<p>8.6.2 清除符號資訊</p>
+<p>正常情況下編譯出來的共用函式庫或執行檔裡面帶有符號資訊和除錯資訊，這些資訊在除錯時非常有用，但是對於最終發布的版本來說，這些符號資訊用處並不大，並且使得檔案尺寸變大。我們可以使用一個叫“strip”的工具清除掉共用函式庫或執行檔的所有符號和除錯資訊（“strip”是binutils的一部分）：</p>
+<pre>$strip libfoo.so</pre>
+<p>去除符號和除錯資訊以後的檔案往往比之前要小很多，一般只有原來的一半大小，甚至不到一半。除了使用“strip”工具，我們還可以使用ld的“-s”和“-S”引數，使得連結器生成輸出檔案時就不產生符號資訊。“-s”和“-S”的區別是：“-S”消除除錯符號資訊，而“-s”消除所有符號資訊。我們也可以在gcc中透過“-Wl,-s”和“-Wl,-S”給ld傳遞這兩個引數。</p>
+<p>8.6.3 共用函式庫的安裝</p>
+<p>建立共用函式庫以後我們須將它安裝在系統中，以便於各種程式都可以共享它。最簡單的辦法就是將共用函式庫複製到某個標準的共用函式庫目錄，如/lib、/usr/lib等，然後執行ldconfig即可。</p>
+<p>不過上述方法往往需要系統的root許可權，如果沒有，則無法往/lib、/usr/lib等目錄新增檔案，也無法執行ldconfig程式。當然我們也有其他辦法安裝共用函式庫，只不過步驟稍微麻煩一些，無非是建立相應的SO-NAME軟連結，並告訴編譯器和程式如何查詢該共用函式庫等，以便於編譯器和程式都能夠正常執行。建立SO-NAME的辦法也是使用ldconfig，只不過需要指定共用函式庫所在的目錄：</p>
+<pre>$ldconfig –n shared_library_directory</pre>
+<p>在編譯程式時，也需要指定共用函式庫的位置，GCC提供了兩個引數“-L”和“-l”，分別用於指定共用函式庫搜尋目錄和共用函式庫的路徑。當然也可以使用前面提到過的“-rpath”引數，這幾個引數之間有些細微的區別，我們這裡不詳細解釋了，它們的作用都是用來指定共用函式庫的位置，具體可以參照GCC的手冊。前面提到過的LD_LIBRARY_PATH的方法也可以用來指定某個共用函式庫的位置。</p>
+<p>8.6.4 共用函式庫構造和解構函式</p>
+<p>很多時候你希望共用函式庫在被載入時能夠進行一些初始化工作，比如開啟檔案、網路連線等，使得共用函式庫裡面的函式介面能夠正常工作。GCC提供了一種共用函式庫的建構函式，只要在函式宣告時加上“__<code>attribute__((constructor))</code>”的屬性，即指定該函式為共用函式庫建構函式，擁有這種屬性的函式會在共用函式庫載入時被執行，即在程式的main函式之前執行。如果我們使用<code>dlopen()</code>開啟共用函式庫，共用函式庫建構函式會在<code>dlopen()</code>返回之前被執行。</p>
+<p>與共用函式庫建構函式相對應的是解構函式，我們可以使用在函式宣告時加上“__<code>attribute__((destructor))”</code>的屬性，這種函式會在<code>main()</code>函式執行完畢之後執行（或者是程式呼叫<code>exit()</code>時執行）。如果共用函式庫是執行時載入的，那麼我們使用<code>dlclose()</code>來解除安裝共用函式庫時，解構函式將會在<code>dlclose()</code>返回之前執行。宣告構造和解構函式的格式如下：</p>
+<pre>void __attribute__((constructor)) init_function(void);
+void __attribute__((destructor))  fini_function (void);
+</pre>
+<p>當然，這種<code>__attribute__</code>的語法是GCC對C和C++語言的擴充套件，在其他編譯器上這種語法並不通用。</p>
+<p>值得注意的是，如果我們使用了這種析構或建構函式，那麼必須使用系統預設的標準執行庫和啟動檔案，即不可以使用GCC的<code>“-nostartfiles</code>”或“-<code>nostdlib</code>”這兩個引數。因為這些構造和解構函式是在系統預設的標準執行庫或啟動檔案裡面被執行的，如果沒有這些輔助結構，它們可能不會被執行。我們將在後面的關於系統庫和啟動檔案的章節更加詳細介紹相關的機制。</p>
+<p>另外還有一個問題是，如果我們有多個建構函式，那麼預設情況下，它們被執行的順序是沒有規定的。如果我們希望構造和解構函式能夠按照一定的順序執行，GCC為我們提供了一個引數叫做優先順序，我們可以指定某個構造或解構函式的優先順序：</p>
+<pre>void __attribute__((constructor(5))) init_function1(void);
+void __attribute__((constructor(10))) init_function2(void);
+</pre>
+<p>對於建構函式來說，屬性中優先順序數字越小的函式將會在優先順序大的函式之前執行；而對於解構函式來講，則剛好相反。這種安排有利於建構函式和解構函式能夠匹配，比如某一對建構函式和解構函式分別用來申請和釋放某個資源，那麼它們可以擁有一樣的優先順序。這樣做的結果往往是先申請的資源後釋放，符合資源釋放的一般規則。</p>
+<p>8.6.5 共用函式庫指令碼</p>
+<p>我們前面所提到的共用函式庫都是動態連結的ELF共享物件檔案（.so），事實上，共用函式庫還可以是符合一定格式的連結指令碼檔案。透過這種指令碼檔案，我們可以把幾個現有的共用函式庫透過一定的方式組合起來，從使用者的角度看就是一個新的共用函式庫。比如我們可以把C執行庫和數學庫組合成一個新的庫libfoo.so，那麼libfoo.so的內容可以如下：</p>
+<p>GROUP( /lib/libc.so.6 /lib/libm.so.2)</p>
+<p>我們在前面也介紹過LD的連結指令碼，這裡的指令碼與LD的指令碼從語法和命令上來講沒什麼區別，它們的作用也相似，即將一個或多個輸入檔案以一定的格式經過變換以後形成一個輸出檔案。我們也可以將這種共用函式庫指令碼叫做動態連結指令碼，因為這個連結過程是動態完成的，也就是執行時完成的。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/8.5.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../chapters/8.7.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/8.5.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../chapters/8.7.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

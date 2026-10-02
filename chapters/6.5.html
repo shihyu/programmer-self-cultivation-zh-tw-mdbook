@@ -1,0 +1,269 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>6.5 Linux核心載入ELF過程簡介 - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="65-linux核心載入elf過程簡介"><a class="header" href="#65-linux核心載入elf過程簡介">6.5 Linux核心載入ELF過程簡介</a></h2>
+<p>當我們在Linux系統的bash下輸入一個命令執行某個ELF程式時，Linux系統是怎樣載入這個ELF檔案並且執行它的呢？</p>
+<p>首先在使用者層面，bash程式會呼叫fork()系統呼叫建立一個新的程式，然後新的程式呼叫<code>execve()</code>系統呼叫執行指定的ELF檔案，原先的bash程式繼續返回等待剛才啟動的新程式結束，然後繼續等待使用者輸入命令。<code>execve()</code>系統呼叫被定義在unistd.h，它的原型如下：</p>
+<pre>int execve(const char *filename, char *const argv[], char *const envp[]);</pre>
+<p>它的三個引數分別是被執行的程式檔名、執行引數和環境變數。Glibc對<code>execvp()</code>系統呼叫進行了包裝，提供了<code>execl()、execlp()、execle()、execv()</code>和<code>execvp()</code>等5個不同形式的exec係列API，它們只是在呼叫的引數形式上有所區別，但最終都會呼叫到<code>execve()</code>這個系統中。下面是一個簡單的使用<code>fork()</code>和<code>execlp()</code>實現的minibash：</p>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;unistd.h&gt;
+
+int main()
+{
+    char buf[1024] = {0};
+    pid_t pid;
+    while(1) {
+        printf("minibash$");
+        scanf("%s", buf);
+        pid = fork();
+        if(pid == 0) {
+            if(execlp(buf, 0 ) &lt; 0) {
+                printf("exec error\n");
+            }
+        } else if(pid &gt; 0){
+            int status;
+            waitpid(pid,&amp;status,0);
+        } else {
+            printf("fork error %d\n",pid);
+        }
+}
+    return 0;
+}
+</pre>
+<p>在進入<code>execve()</code>系統呼叫之後，Linux核心就開始進行真正的載入工作。在核心中，<code>execve()</code>系統呼叫相應的入口是<code>sys_execve()，</code>它被定義在arch\i386\kernel\Process.c。<code>sys_execve()</code>進行一些引數的檢查複製之後，呼叫<code>do_execve()。do_execve()</code>會首先查詢被執行的檔案，如果找到檔案，則讀取檔案的前128個位元組。為什麼要這麼做呢？因為我們知道，Linux支援的執行檔不止ELF一種，還有a.out、Java程式和以“#!”開始的指令碼程式。Linux還可以支援更多的執行檔格式，如果某一天Linux須支援Windows PE的執行檔格式，那麼我們可以編寫一個支援PE載入的核心模組來實現Linux對PE檔案的支援。這裡<code>do_execve()</code>讀取檔案的前128個位元組的目的是判斷檔案的格式，每種執行檔的格式的開頭幾個位元組都是很特殊的，特別是開頭4個位元組，常常被稱做魔數（Magic Number），透過對魔數的判斷可以確定檔案的格式和型別。比如ELF的執行檔格式的頭4個位元組為0x7F、’e’、’l’、’f’；而Java的執行檔格式的頭4個位元組為’c’、’a’、’f’、’e’；如果被執行的是Shell指令碼或perl、python等這種解釋型語言的指令碼，那麼它的第一行往往是“#!/bin/sh”或“#!/usr/bin/perl”或“#!/usr/bin/python”，這時候前兩個位元組’#’和’!’就構成了魔數，系統一旦判斷到這兩個位元組，就對後面的字串進行解析，以確定具體的解釋程式的路徑。</p>
+<p>當<code>do_execve()</code>讀取了這128個位元組的檔案頭部之後，然後呼叫<code>search_binary_handle()</code>去搜尋和匹配合適的執行檔載入處理過程。Linux中所有被支援的執行檔格式都有相應的載入處理過程，<code>search_binary_handle()</code>會透過判斷檔案頭部的魔數確定檔案的格式，並且呼叫相應的載入處理過程。比如ELF執行檔的載入處理過程叫做<code>load_elf_binary()；</code>a.out執行檔的載入處理過程叫做<code>load_aout_binary()；</code>而載入可執行指令碼程式的處理過程叫做<code>load_script()。</code>這裡我們只關心ELF執行檔的載入，<code>load_elf_binary()</code>被定義在fs/Binfmt_elf.c，這個函式的程式碼比較長，它的主要步驟是：</p>
+<p>（1）檢查ELF執行檔格式的有效性，比如魔數、程式頭表中段（Segment）的數量。</p>
+<p>（2）尋找動態連結的“.interp”段，設定動態連結器路徑（與動態連結有關，具體請參考第9章）。</p>
+<p>（3）根據ELF執行檔的程式頭表的描述，對ELF檔案進行對映，比如程式碼、資料、只讀資料。</p>
+<p>（4）初始化ELF程式環境，比如程式啟動時EDX暫存器的地址應該是DT_FINI的地址（參照動態連結）。</p>
+<p>（5）將系統呼叫的返回地址修改成ELF執行檔的入口點，這個入口點取決於程式的連結方式，對於靜態連結的ELF執行檔，這個程式入口就是ELF檔案的檔案頭中<code>e_entry</code>所指的地址；對於動態連結的ELF執行檔，程式入口點是動態連結器。</p>
+<p>當<code>load_elf_binary()</code>執行完畢，返回至<code>do_execve()</code>再返回至<code>sys_execve()</code>時，上面的第5步中已經把系統呼叫的返回地址改成了被載入的ELF程式的入口地址了。所以當<code>sys_execve()</code>系統呼叫從核心態返回到使用者態時，EIP暫存器直接跳轉到了ELF程式的入口地址，於是新的程式開始執行，ELF執行檔載入完成。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/6.4.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../chapters/6.6.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/6.4.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../chapters/6.6.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

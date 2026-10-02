@@ -1,0 +1,271 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>9.4 C++與動態連結 - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="94-c與動態連結"><a class="header" href="#94-c與動態連結">9.4 C++與動態連結</a></h2>
+<p>Linux下的絕大部分共用函式庫都是用C語言編寫的，這一方面是由於歷史的原因，Linux下的程式主要都是使用C語言；另一方面是由於使用C++語言編寫共用函式庫比使用C語言要複雜得多。在本書的第2部分，我們已經討論了C++的ABI以及C和C++之間如何互操作的問題（用extern “C”）。除了上面這些問題之外，使用C++編寫共用函式庫還存在一個更大的問題是：共用函式庫會更新。共用函式庫可以單獨更新是它的一大優勢，但如果這是一個C++編寫的共用函式庫，那又是另外一回事了，它有可能是一場噩夢。這一切噩夢的根源還是由於C++的標準只規定了語言層面的規則，而對二進位級別卻沒有任何規定。</p>
+<p>《COM本質論》裡面舉了一個很生動的例子。假設有個程式設計師實現了一個複雜度為O(1)的字串查詢演算法，這個演算法非常有用，於是該程式設計師打算把這個演算法做成DLL並且賣給各大計算機軟體廠商和軟體開發者，每份DLL的價格是100元。程式設計師是這樣定義他的排序演算法標頭檔：</p>
+<pre>    class __declspec(dllexport) StringFind {
+        char* p;        // 字符串
+        public:
+            StringFind(char* p);
+            ~StringFind();
+            int Find(char* p);  // 查找字符串並返回找到的位置
+            int Length();       // 返回字符串長度
+    };
+</pre>
+<p><code>Find()</code>成員函式的作用是查詢字串並返回查詢結果。當然Find演算法的具體實現非常複雜，執行時佔用數十M記憶體，程式設計師把實現程式碼編譯成StringFind.DLL，然後對該DLL的程式碼進行加密後與標頭檔一起出售，防止使用者透過反向工程對該排序演算法進行破解。很快，這個演算法受到了各大廠商的好評，大家普遍認為這個100元的StringFind.DLL非常物美價廉。程式設計師也很受鼓舞，決定再接再厲，對演算法進行改進： 第一個是<code>Length()</code>函式之前是呼叫<code>strlen(this-&gt;p)</code>實現的，時間複雜度為O(n)，改進後的類裡面增加了int length成員變數用於儲存字串長度，時間複雜度變成了O(1)；第二個改進是應一些使用者的要求，增加了一個叫做SubString的函式，用於取得字串的子串;第三個是對Find()演算法實現進行了改進，使得原先要佔有數十M記憶體降低到只佔用數M記憶體。改進後的標頭檔原始碼如下：</p>
+<pre>class __declspec(dllexport) StringFind {
+        char* p;
+        int length;
+        public:
+            StringFind(char* p);
+            ~StringFind();
+            int Find(char* p);
+            int Length();
+            char* SubString(int pos, int len);
+    };
+</pre>
+<p>按照程式設計師最初的設想，類只增加了一個私有成員變數和公有成員函式，並不會對現有的程式有任何影響，他用一些測試的程式碼進行了測試，發現沒有任何編譯錯誤和執行錯誤。於是他就把新版的StringFind.DLL以200元的價格賣出，而那些原先購買了舊版StringFind.DLL的使用者只需要加100元的差價就可以購買新版的DLL。由於新版的DLL諸多效能改進和功能增加，各大廠商和使用者立即購買了新版的DLL，並且他們得到程式設計師的保證：新版的DLL與舊版的DLL完全相容。拿到該排序演算法的DLL後，廠商們將它廣泛地用於各種產品，並且隨著他們的產品光碟、網際網路下載各種手段發布給終端使用者；已經發布出去的使用舊版StringFind.DLL的程式也都收到了一個補丁升級包，號稱只要安裝該補丁，原先的程式就會執行得更快更有效，於是大多數的使用者不假思索地就點選了“升級”按鈕。</p>
+<p>很快廠商們接到使用者鋪天蓋地的抱怨，說他們的程式經常莫名其妙地錯誤或者執行時間一長就會佔用大量的記憶體最終導致程式崩潰，甚至影響其他程式的執行。於是這些廠商的技術工程師們連夜對他們的程式進行排查，最終發現這些問題全都來自於StringFind.DLL。主要發現了下面幾個問題：</p>
+<p>• 按照介面的設計，SubString返回指向字串子串的指標，但StringFind.DLL並不負責該返回指標的記憶體釋放工作，使用者在用完該指標之後需要呼叫delete對它進行釋放。這在有些時候是沒有問題的，但是如果StringFind.DLL所使用的CRT版本與使用者主程式或者其他DLL所使用的CRT版本不一樣，程式就會發生記憶體釋放錯誤。由於每個CRT都會有自己獨立的堆，在一個CRT中申請記憶體而在另外一個CRT中釋放記憶體將會導致釋放出錯。</p>
+<p>• 各個廠商對DLL檔案升級的做法往往就是簡單地用新版的DLL覆蓋舊版的DLL，這也是基於程式設計師保證新版完全相容舊版DLL的基礎上。但是當StringFind類在增加了一個length成員變數之後，新版的StringFind物件所佔用的空間是8個位元組，而原先只有一個成員變數時只佔用4個位元組。那麼原先程式主模組在對StringFind進行例項化時，實際上是相當於例項化了舊版的StringFind。比如舊版中有new StringFind()這樣的語句，實際上它的作用相當於申請4個位元組的記憶體，然後呼叫StringFind()初始化函式。但是在新版的StringFind中，StringFind.DLL裡面的StringFind建構函式和Length()都認為StringFind物件有8個位元組，當任何一個函式訪問length變數的時候實際上這塊區域並不屬於StringFind物件，很容易出現錯誤的資料訪問，導致程式莫名其妙地崩潰。</p>
+<p>• 很多程式在安裝時就把StringFind.DLL放到系統的DLL目錄下\WINDOWS\System32，而在升級或者重新安裝時採用簡單覆蓋的方法。於是當一個安裝程式將新版的StringFind.DLL覆蓋舊版的DLL時，所有使用舊版DLL的程式都會發生程式執行錯誤。</p>
+<p>在發生這一大堆問題之後，程式設計師受不了廠商的抱怨只好徹夜工作，並提出了一些改進的方法，比如增加一個<code>ReleaseString()</code>的成員類來釋放<code>SubString()</code>所返回的字串；將新版的StringFind.DLL命名為StringFind2.DLL以區別舊版等。一個簡單的改進都成了程式設計師的噩夢，他都不敢再做任何深入的改進了，更別說在DLL中使用C++的其他特性諸如虛擬函式、多繼承、異常、過載、模板等，誰知道又會發生什麼樣的情況。</p>
+<p>這只是程式設計師在使用C++編寫DLL時遇到的問題中的冰山一角，為瞭解決類似的相容性問題，更大程度上使得程式能夠有更好的重用性，微軟公司很早就開始了元件物件模型（COM，Component object model）的開發工作，它的主要目的之一就是為瞭解決這些在程式開發中遇到的相容性問題。</p>
+<p>推薦閱讀：《COM本質論》</p>
+<p>《COM本質論》是一本很好的描述COM實現機制的一本書，作者Don Box透過生動的例子，深入淺出地將COM這個晦澀的技術剖析地非常淺顯易懂。本文中的例子也是來源於這本書中的一個例子並加以改進。</p>
+<p>COM的實現機制對於普通開發者來說顯得複雜了一些，並且COM的學習曲線也比較陡，不太容易入門。但是我們可以把COM的一些精神提取出來，用於指導我們使用C++編寫動態連結庫。在Windows平台下（有些意見對Linux/ELF也有效），要盡量遵循以下幾個指導意見：</p>
+<p>所有的介面函式都應該是抽象的。所有的方法都應該是純虛的。（或者inline的方法也可以）。</p>
+<p>所有的全域性函式都應該使用extern“C”來防止名字修飾的不相容。並且匯出函式的都應該是__stdcall呼叫規範的（COM的DLL都使用這樣的規範）。這樣即使使用者本身的程式是預設以__cdecl方式編譯的，對於DLL的呼叫也能夠正確。</p>
+<p>不要使用C++標準庫STL。</p>
+<p>不要使用異常。</p>
+<p>不要使用虛解構函式。可以建立一個<code>destroy()</code>方法並且過載delete運算子並且呼叫<code>destroy()。</code></p>
+<p>不要在DLL裡面申請記憶體，而且在DLL外釋放（或者相反）。不同的DLL和執行檔可能使用不同的堆，在一個堆裡面申請記憶體而在另外一個堆裡面釋放會導致錯誤。比如，對於記憶體分配相關的函式不應該是inline的，以防止它在編譯時被展開到不同的DLL和執行檔。</p>
+<p>不要在介面中使用過載方法（Overloaded Methods，一個方法多重引數）。因為不同的編譯器對於vtable的安排可能不同。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/9.3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../chapters/9.5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/9.3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../chapters/9.5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

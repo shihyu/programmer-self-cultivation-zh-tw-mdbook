@@ -1,0 +1,401 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>7.7 顯式執行時連結 - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="77-顯式執行時連結"><a class="header" href="#77-顯式執行時連結">7.7 顯式執行時連結</a></h2>
+<p>支援動態連結的系統往往都支援一種更加靈活的模組載入方式，叫做顯式執行時連結（Explicit Run-time Linking），有時候也叫做執行時載入。也就是讓程式自己在執行時控制載入指定的模組，並且可以在不需要該模組時將其解除安裝。從前面我們瞭解到的來看，如果動態連結器可以在執行時將共享模組載入進記憶體並且可以進行重定位等操作，那麼這種執行時載入在理論上也是很容易實現的。而且一般的共享物件不需要進行任何修改就可以進行執行時載入，這種共享物件往往被叫做動態載入庫（Dynamic Loading Library），其實本質上它跟一般的共享物件沒什麼區別，只是程式開發者使用它的角度不同。</p>
+<p>這種執行時載入使得程式的模組組織變得很靈活，可以用來實現一些諸如外掛、驅動等功能。當程式需要用到某個外掛或者驅動的時候，才將相應的模組載入進來，而不需要從一開始就將他們全部載入進來，從而減少了程式啟動時間和記憶體使用。並且程式可以在執行的時候重新載入某個模組，這樣使得程式本身不必重新啟動而實現模組的增加、刪除、更新等，這對於很多需要長期執行的程式來說是很大的優勢。最常見的例子是Web伺服器程式，對於Web伺服器程式來說，它需要根據配置來選擇不同的指令碼直譯器、資料庫連線驅動等，對於不同的指令碼直譯器分別做成一個獨立的模組，當Web伺服器需要某種指令碼直譯器的時候可以將其載入進來；這對於資料庫連線的驅動程式也是一樣的原理。另外對於一個可靠的Web伺服器來說，長期的執行是必要的保證，如果我們需要增加某種指令碼直譯器，或者某個指令碼直譯器模組需要升級，則可以通知Web伺服器程式重新載入該共享模組以實現相應的目的。</p>
+<p>在Linux中，從檔案本身的格式上來看，動態函式庫實際上跟一般的共享物件沒有區別，正如我們前面討論過的。主要的區別是共享物件是由動態連結器在程式啟動之前負責載入和連結的，這一係列步驟都由動態聯結器自動完成，對於程式本身是透明的；而動態函式庫的載入則是透過一係列由動態連結器提供的API，具體地講共有4個函式：開啟動態函式庫（dlopen）、查詢符號（dlsym）、錯誤處理（dlerror）以及關閉動態函式庫（dlclose），程式可以透過這幾個API對動態函式庫進行操作。這幾個API的實現是在/lib/libdl.so.2裡面，它們的宣告和相關常量被定義在系統標準標頭檔&lt;dlfcn.h&gt;。我們先來看看這幾個函式的具體意義，然後再演示一個很有意思的小程式。</p>
+<p>7.7.1 <code>dlopen()</code></p>
+<p><code><code>dlopen()</code> 函數用來打開一個動態庫，並將其加載到進程的地址空間，完成初始化過程，它的C原型定義為：</code></p>
+<p>第一個引數是被載入動態函式庫的路徑，如果這個路徑是絕對路徑（以“/”開始的路徑），則該函式將會嚐試直接開啟該動態函式庫；如果是相對路徑，那麼<code>dlopen()</code>會嚐試在以一定的順序去查詢該動態函式庫檔案：</p>
+<p>（1）查詢有環境變數LD_LIBRARY_PATH指定的一係列目錄（我們在後面會詳細介紹LD_LIBRARY_PATH環境變數）。</p>
+<p>（2）查詢由/etc/ld.so.cache裡面所指定的共用函式庫路徑。</p>
+<p>（3）/lib、/usr/lib 注意：這個查詢順序與舊的a.out載入器的順序剛好相反，舊的a.out的載入器在載入共用函式庫的時候會先查詢/usr/lib，然後是/lib。</p>
+<p>當然，這在理論上不應該成為一個問題，因為所有的庫都應該只存在於某個目錄中，而不應該在多個目錄有不同的副本，這將會導致系統變得極為不可靠。</p>
+<p>很有意思的是，如果我們將filename這個引數設定為0，那麼dlopen返回的將是全域性符號表的控制代碼，也就是說我們可以在執行時找到全域性符號表裡面的任何一個符號，並且可以執行它們，這有些類似高階語言反射（Reflection）的特性。全域性符號表包括了程式的執行檔本身、被動態連結器載入到程式中的所有共享模組以及在執行時透過dlopen開啟並且使用了RTLD_GLOBAL方式的模組中的符號。</p>
+<p>第二個引數flag表示函式符號的解析方式，常量RTLD_LAZY表示使用延遲繫結，當函式第一次被用到時才進行繫結，即PLT機制；而RTLD_NOW表示當模組被載入時即完成所有的函式繫結工作，如果有任何未定義的符號引用的繫結工作沒法完成，那麼<code>dlopen()</code>就返回錯誤。上面的兩種繫結方式必須選其一。另外還有一個常量RTLD_GLOBAL可以跟上面的兩者中任意一個一起使用（透過常量的“或”操作），它表示將被載入的模組的全域性符號合並到程式的全域性符號表中，使得以後載入的模組可以使用這些符號。在除錯程式的時候我們可以使用RTLD_NOW作為載入引數，因為如果模組載入時有任何符號未被繫結的話，我們可以使用<code>dlerror()</code>立即捕獲到相應的錯誤資訊；而如果使用RTLD_LAZY的話，這種符號未繫結的錯誤會在載入後發生，則難以捕獲。當然，使用RTLD_NOW會導致載入動態函式庫的速度變慢。</p>
+<p>dlopen的返回值是被載入的模組的控制代碼，這個控制代碼在後面使用dlsym或者dlclose時需要用到。如果載入模組失敗，則返回NULL。如果模組已經透過dlopen被載入過了，那麼返回的是同一個控制代碼。另外如果被載入的模組之間有依賴關係，比如模組A依賴與模組B，那麼程式設計師需要手工載入被依賴的模組，比如先載入B，再載入A。</p>
+<p>事實上dlopen還會在載入模組時執行模組中初始化部分的程式碼，我們前面提到過，動態連結器在載入模組時，會執行“.init”段的程式碼，用以完成模組的初始化工作，dlopen的載入過程基本跟動態連結器一致，在完成載入、對映和重定位以後，就會執行“.init”段的程式碼然後返回。</p>
+<p>7.7.2 <code>dlsym()</code></p>
+<p><code>dlsym函數基本上是運行時裝載的核心部分，我們可以通過這個函數找到所需要的符號。它的定義如下：</code></p>
+<pre><code>
+void * dlsym(void *handle, char *symbol);</code></pre>
+<p><code>定義非常簡潔，兩個參數，第一個參數是由</code>dlopen()返回的動態函式庫的控制代碼；第二個引數即所要查詢的符號的名字，一個以“<code>\0</code>”結尾的C字串。如果<code>dlsym()</code>找到了相應的符號，則返回該符號的值；沒有找到相應的符號，則返回NULL。<code>dlsym()</code>返回的值對於不同型別的符號，意義是不同的。如果查詢的符號是個函式，那麼它返回函式的地址；如果是個變數，它返回變數的地址；如果這個符號是個常量，那麼它返回的是該常量的值。這裡有一個問題是：如果常量的值剛好是NULL或者0呢，我們如何判斷<code>dlsym()</code>是否找到了該符號呢？這就要用到我們下面介紹的<code>dlerror()</code>函式了。如果符號找到了，那麼<code>dlerror()</code>返回NULL，如果沒找到，<code>dlerror()</code>就會返回相應的錯誤資訊。</p>
+<p>符號不僅僅是函式和變數，有時還是常量，比如表示編譯單元檔名的符號等，這一般由編譯器和連結器產生，而且對外不可見，但它們的確存在於模組的符號表中。<code>dlsym()</code>是可以查詢到這些符號的，我們也可以透過“objdump –t”來檢視符號表，常量在符號表裡面的型別是“*ABS*”。</p>
+<p>符號優先順序</p>
+<p>前面在介紹動態連結實現時，我們已經碰到過許多共享模組中符號名衝突的問題，結論是當多個同名符號衝突時，先裝入的符號優先，我們把這種優先順序方式稱為載入序列（Load Ordering）。那麼當我們的程式中有模組是透過dlopen()裝入的共享物件時，這些後裝入的模組中的符號可能會跟先前已經裝入了的模組之間的符號重複。那麼這時候模組之間的符號衝突該怎麼解決呢？實際上不管是之前由動態連結器裝入的還是之後由dlopen裝入的共享物件，動態連結器在進行符號的解析以及重定位時，都是採用載入序列。</p>
+<p>那麼當我們使用<code>dlsym()</code>進行符號的地址查詢工作時，這個函式是不是也是按照載入序列的優先順序進行符號的查詢呢？實際的情況是，<code>dlsym()</code>對符號的查詢優先順序分兩種型別。第一種情況是，如果我們是在全域性符號表中進行符號查詢，即<code>dlopen()</code>時，引數filename為NULL，那麼由於全域性符號表使用的載入序列，所以<code>dlsym()</code>使用的也是載入序列。第二種情況是如果我們是對某個透過<code>dlopen()</code>開啟的共享物件進行符號查詢的話，那麼採用的是一種叫做依賴序列（Dependency Ordering）的優先順序。什麼叫依賴序列呢？它是以被<code>dlopen()</code>開啟的那個共享物件為根節點，對它所有依賴的共享物件進行廣度優先遍曆，直到找到符號為止。</p>
+<p>7.7.3 <code>dlerror()</code></p>
+<p><code>每次我們調用</code>dlopen()、dlsym()或<code>dlclose()</code>以後，我們都可以呼叫<code>dlerror()</code>函式來判斷上一次呼叫是否成功。<code>dlerror()</code>的返回值型別是char*，如果返回NULL，則表示上一次呼叫成功；如果不是，則返回相應的錯誤訊息。</p>
+<p>7.7.4 <code>dlclose()</code></p>
+<p><code><code>dlclose()</code>的作用跟<code>dlopen()</code>剛好相反，它的作用是將一個已經加載的模塊卸載。係統會維持一個加載引用計數器，每次使用<code>dlopen()</code>加載某模塊時，相應的計數器加一；每次使用<code>dlclose()</code>卸載某模塊時，相應計數器減一。隻有當計數器值減到0時，模塊才被真正地卸載掉。卸載的過程跟加載剛好相反，先執行“.finit”段的代碼，然後將相應的符號從符號表中去除，取消進程空間跟模塊的映射關係，然後關閉模塊文件。</code></p>
+<p>下面是一個簡單的例子，這段程式將數學庫模組用執行時載入的方法載入到程式中，然後獲取<code>sin()</code>函式符號地址，呼叫<code>sin()</code>並且返回結果：</p>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;dlfcn.h&gt;
+
+int main(int argc, char* argv[])
+{
+    void* handle;
+    double (*func)(double);
+    char* error;
+
+    handle = dlopen(argv[1],RTLD_NOW);
+    if(handle == NULL) {
+        printf("Open library %s error: %s\n", argv[1], dlerror());
+        return -1;
+    }
+
+    func = dlsym(handle,"sin");
+    if( (error = dlerror()) != NULL ) {
+        printf("Symbol sin not found: %s\n", error);
+        goto exit_runso;
+    }
+
+    printf( "%f\n", func(3.1415926 / 2) );
+
+    exit_runso:
+    dlclose(handle);
+}
+
+$gcc –o RunSoSimple RunSoSimple.c –ldl
+$./RunSoSimple /lib/libm-2.6.1.so
+1.000000
+</pre>
+<p>-ldl 表示使用DL庫（Dynamical Loading），它位於/lib/libdl.so.2。</p>
+<p>7.7.5 執行時載入的演示程式</p>
+<p>或許我們都聽說過Windows下有個程式叫做rundll，這個程式可以把Windows的DLL當作程式來執行。我們知道DLL是Windows的動態連結庫，原理上跟Linux下的共享物件是一種型別的檔案（我們將在後面的章節中詳細介紹Windows DLL）。rundll其實就是利用了執行時載入的原理，將指定的共享物件在執行時載入進來，然後找到某個函式（DLL中是DllMain）開始執行。我們這個例子中將實現一個更為靈活的叫做runso的程式，這個程式可以透過命令列來執行共享物件裡面的任意一個函式。它在理論上很簡單，基本的步驟就是：由命令列給出共享物件路徑、函式名和相關引數，然後程式透過執行時載入將該模組載入到程式中，查詢相應的函式，並且執行它，然後將執行結果列印出來。但是這裡有一個很大的問題是：不同的函式有不同的引數和返回值型別，即有不同的函式簽名。當我們需要執行某個指定的函式時，僅僅知道它的地址是不夠的，還必須知道它的函式簽名。這些資訊是無法透過執行時載入獲得的（很多高階語言（平台）如Java、.NET裡面的反射功能可以實現執行時獲得函式的額外資訊，包括引數、返回值型別等），因為C/C++編譯器在編譯時並沒有把這些資訊也儲存到目的檔、執行檔或者共享物件等，我們僅僅能獲得的是函式的地址。從這一點來看，C/C++的確不能被稱為“高階”語言。</p>
+<p>對於上面無法得知函式型別的問題，我們只能透過呼叫者指定函式的引數和返回值型別來實現。比如我們規定RunSo的使用方式如下：</p>
+<pre>$RunSo /lib/foobar.so function arg1 arg2 ... return_type</pre>
+<p>為了表示引數和返回值型別，我們假設字母d表示double、i表示int、s表示char*、v表示void。然後我們在引數之前加一個字母表示引數的型別：</p>
+<pre>$./RunSo /lib/libm-2.6.1.so sin d2.0 d</pre>
+<p>這就表示我們希望呼叫/lib/libm-2.6.1.so裡面的sin函式，其中第一個引數是double型別的，引數值是2.0；最後一個字母d表示sin函式的返回值是double型別的。那麼如果要呼叫/lib/libfoo.so裡面一個void bar(char* str, int i)的函式可以使用如下命令列：</p>
+<p>對於上面無法得知函式型別的問題，我們只能透過呼叫者指定函式的引數和返回值型別來實現。比如我們規定RunSo的使用方式如下：</p>
+<pre>$RunSo /lib/foobar.so function arg1 arg2 ... return_type</pre>
+<p>為了表示引數和返回值型別，我們假設字母d表示double、i表示int、s表示char*、v表示void。然後我們在引數之前加一個字母表示引數的型別：</p>
+<pre>$./RunSo /lib/libm-2.6.1.so sin d2.0 d</pre>
+<p>這就表示我們希望呼叫/lib/libm-2.6.1.so裡面的sin函式，其中第一個引數是double型別的，引數值是2.0；最後一個字母d表示sin函式的返回值是double型別的。那麼如果要呼叫/lib/libfoo.so裡面一個void bar(char* str, int i)的函式可以使用如下命令列：</p>
+<pre>$./RunSo /lib/libfoo.so bar sHello i10 v</pre>
+<p>上面的命令相當於呼叫<code>bar(“Hello”, 10</code>)。函式的型別我們已經透過手工指定可以得知了，但在RunSo的實現上還有一個問題存在。</p>
+<p>我們上面的例子中，sin函式的型別是程式設計師手工指定的，也就是我們知道數學庫裡面有這樣一個sin函式，它的型別是double sin(double)，於是我們定義了一個指向這種型別的函式指標double (*func)(double)。但是如果要做到呼叫任意一個函式，我們不可能為每種函式都定義相同型別的函式指標，然後去呼叫它，因為函式引數的組合有無數種。為瞭解決這個問題，我們必須瞭解函式呼叫的約定（具體參照後面的函式呼叫約定），然後在呼叫函式之前偽造好相應的堆疊，造成正常函式呼叫的假象。為了能夠直接操作堆疊，我們不得不使用嵌入組合語言程式碼來完成相應的操作。下面這個例子就是RunSo的原始碼，其中用到了一些嵌入組合語言程式碼和一些函式呼叫約定的知識，稍微有點複雜，如果你一時沒有看明白可以等看完“函式呼叫約定”再回來仔細研究這段程式碼，就會豁然開朗了。如果對嵌入組合語言程式碼不是很熟悉，可以再回顧一下最開始我們介紹過的嵌入組合語言程式碼的內容，如下：</p>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;dlfcn.h&gt;
+
+#define SETUP_STACK           \
+i = 2;                          \
+while(++i &lt; argc - 1) {         \
+    switch(argv[i][0]) {        \
+    case 'i':                   \
+        asm volatile("push %0" :: \
+ "r"(atoi(&amp;argv[i][1])) );  \
+        esp += 4;             \
+        break;                  \
+    case 'd':                 \
+        atof(&amp;argv[i][1]);        \
+        asm volatile("subl $8,%esp\n" \
+        "fstpl (%esp)" );         \
+        esp += 8;             \
+        break;                  \
+    case 's':                 \
+        asm volatile("push %0" ::   \
+        "r"(&amp;argv[i][1]) );         \
+        esp += 4;             \
+        break;                  \
+    default:                  \
+        printf("error argument type");  \
+        goto exit_runso;          \
+    }                     \
+}
+
+#define RESTORE_STACK             \
+    asm volatile("add %0,%%esp"::"r"(esp))
+int main(int argc, char* argv[])
+{
+    void* handle;
+    char* error;
+    int i;
+    int esp = 0;    
+    void* func;
+
+    handle = dlopen(argv[1], RTLD_NOW);
+    if(handle == 0) {
+        printf("Can't find library: %s\n", argv[1]);
+        return -1;
+    }
+
+    func = dlsym(handle, argv[2]);
+    if( (error = dlerror()) != NULL ) {
+        printf("Find symbol %s error: %s\n", argv[2], error);
+        goto exit_runso;
+    }
+
+    switch(argv[argc-1][0]){
+    case 'i':
+    {
+        int (*func_int)() = func;
+        SETUP_STACK;
+        int ret = func_int();
+        RESTORE_STACK;
+        printf("ret = %d\n", ret );
+        break;
+    }
+    case 'd':
+    {
+        double (*func_double)() = func;
+ SETUP_STACK;
+        double ret = func_double();
+        RESTORE_STACK;
+        printf("ret = %f\n", ret );
+        break;
+    }
+    case 's':
+    {
+        char* (*func_str)() = func;
+        SETUP_STACK;
+        char* ret = func_str();
+        RESTORE_STACK;
+        printf("ret = %s\n", ret );
+        break;
+    }
+    case 'v':
+    {    
+        void (*func_void)() = func;
+        SETUP_STACK
+        func_void();
+        RESTORE_STACK;
+        printf("ret = void");
+        break;
+    }
+    } // end of switch
+
+    exit_runso:
+
+    dlclose(handle);
+}
+</pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/7.6.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../chapters/7.8.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/7.6.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../chapters/7.8.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

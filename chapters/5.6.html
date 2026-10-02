@@ -1,0 +1,300 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>5.6 Windows下的ELF——PE - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="56-windows下的elfpe"><a class="header" href="#56-windows下的elfpe">5.6 Windows下的ELF——PE</a></h2>
+<p>PE檔案是基於COFF的擴充套件，它比COFF檔案多了幾個結構。最主要的變化有兩個：第一個是檔案最開始的部分不是COFF檔案頭，而是DOS MZ執行檔格式的檔案頭和樁程式碼（DOS MZ File Header and Stub）；第二個變化是原來的COFF檔案頭中的“IMAGE_FILE_HEADER”部分擴充套件成了PE檔案檔案頭結構“IMAGE_NT_HEADERS”，這個結構包括了原來的“Image Header”及新增的PE擴充套件頭部結構（PE Optional Header）。PE檔案的結構如圖5-2所示。</p>
+<p>DOS下的執行檔的副檔名與Windows下的可執行副檔名一樣，都是“.exe”，但是DOS下的執行檔格式是“MZ”格式（因為這個格式比較古老，我們在這裡並不打</p>
+<p><span><img alt="" src="../images/5-2.jpg"/></span> <span>圖5-2 PE檔案格式 …</span></p>
+<p>算展開介紹這種格式），與Windows下的PE格式完全不同，雖然它們使用相同的副檔名。在Windows發展的早期，那時候DOS系統還如日中天，而且早期的Windows版本還不能脫離DOS環境獨立執行，所以為了照顧DOS系統，那些為Windows編寫的程式必須盡量相容原有的DOS系統，所以PE檔案在設計之初就背負著歷史的累贅。PE檔案中“<code>Image DOS Header</code>”和“<code>DOS Stub</code>”這兩個結構就是為了相容DOS系統而設計的，其中“<code>IMAGE_DOS_HEADER</code>”結構其實跟DOS的“<code>MZ</code>”可執行結構的頭部完全一樣，所以從某個角度看，PE檔案其實也是一個“MZ”檔案。“<code>IMAGE_DOS_HEADER</code>”的結構中有的前兩個位元組是“<code>e_magic</code>”結構，它是裡面包含了“MZ”這兩個字母的ASCII碼；“<code>e_cs</code>”和“<code>e_ip</code>”兩個成員指向程式的入口地址。</p>
+<p>當PE可執行映像在DOS下被載入的時候，DOS系統檢測該檔案，發現最開始兩個位元組是“MZ”，於是認為它是一個“MZ”執行檔。然後DOS系統就將PE檔案當作正常的“MZ”檔案開始執行。DOS系統會讀取“e_cs”和“e_ip”這兩個成員的值，以跳轉到程式的入口地址。然而PE檔案中，“e_cs”和“e_ip”這兩個成員並不指向程式真正的入口地址，而是指向檔案中的“DOS Stub”。“DOS Stub”是一段可以在DOS下執行的一小段程式碼，這段程式碼的唯一作用是向終端輸出一行字：“This program cannot be run in DOS”，然後退出程式，表示該程式不能在DOS下執行。所以我們如果在DOS系統下執行Windows的程式就可以看到上面這句話，這是因為PE檔案結構相容DOS“MZ”執行檔結構的緣故。</p>
+<p>“IMAGE_DOS_HEADER”結構也被定義在WinNT.h裡面，該結構的大多數成員我們都不關心，唯一值得關心的是“<code>e_lfanew</code>”成員，這個成員表明了PE檔案頭（IMAGE_NT_HEADERS）在PE檔案中的偏移，我們需要使用這個值來定位PE檔案頭。這個成員在DOS的“MZ”檔案格式中它的值永遠為0，所以當Windows開始執行一個字尾名為“.exe”的檔案時，它會判斷“<code>e_lfanew</code>”成員是否為0。如果為0，則該“.exe”檔案是一個DOS“MZ”執行檔，Windows會啟動DOS子系統來執行它；如果不為0，那麼它就是一個Windows的PE執行檔，“<code>e_lfanew</code>”的值表示“IMAGE_NT_HEADERS”在檔案中的偏移。</p>
+<p>“IMAGE_NT_HEADERS”是PE真正的檔案頭，它包含了一個標記（Signature）和兩個結構體。標記是一個常量，對於一個合法的PE檔案來說，它的值為0x00004550，按照小端位元組序，它對應的是’P’、‘E’、‘\0’、‘\0’這4個字元的ASCII碼。檔案頭包含的兩個結構分別是映像頭（Image Header）、PE擴充套件頭部結構（Image Optional Header）。這個結構定義如下：</p>
+<pre>typedef struct _IMAGE_NT_HEADERS {
+    DWORD Signature;
+    IMAGE_FILE_HEADER FileHeader;
+    IMAGE_OPTIONAL_HEADER OptionalHeader;
+} IMAGE_NT_HEADERS, *PIMAGE_NT_HEADERS;
+</pre>
+<p>“Image Header”我們在介紹COFF目的檔結構時已經和“SectionTable”一起介紹過了。這裡新出現的是PE擴充套件頭部結構，這個結構的字面意思是“可選”（Optional），也就是說不是必須的，但實際上對於PE執行檔（包括DLL）來說，它是必需的。這裡的可選可能是相對於COFF目的檔來說的。該結構裡面包含了很多重要的資訊，同樣，我們可以在“WinNT.h”裡面找到該結構的定義：</p>
+<pre>typedef struct _IMAGE_OPTIONAL_HEADER {
+    //
+    // Standard fields.
+    //
+    WORD    Magic;
+    BYTE    MajorLinkerVersion;
+    BYTE    MinorLinkerVersion;
+    DWORD   SizeOfCode;
+    DWORD   SizeOfInitializedData;
+    DWORD   SizeOfUninitializedData;
+    DWORD   AddressOfEntryPoint;
+    DWORD   BaseOfCode;
+    DWORD   BaseOfData;
+
+    //
+    // NT additional fields.
+    //
+    DWORD   ImageBase;
+    DWORD   SectionAlignment;
+    DWORD   FileAlignment;
+    WORD    MajorOperatingSystemVersion;
+    WORD    MinorOperatingSystemVersion;
+    WORD    MajorImageVersion;
+    WORD    MinorImageVersion;
+    WORD    MajorSubsystemVersion;
+    WORD    MinorSubsystemVersion;
+    DWORD   Win32VersionValue;
+    DWORD   SizeOfImage;
+    DWORD   SizeOfHeaders;
+    DWORD   CheckSum;
+    WORD    Subsystem;
+    WORD    DllCharacteristics;
+    DWORD   SizeOfStackReserve;
+    DWORD   SizeOfStackCommit;
+    DWORD   SizeOfHeapReserve;
+    DWORD   SizeOfHeapCommit;
+    DWORD   LoaderFlags;
+    DWORD   NumberOfRvaAndSizes;
+    IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
+} IMAGE_OPTIONAL_HEADER32, *PIMAGE_OPTIONAL_HEADER32;
+</pre>
+<p>我們這裡所討論的“Optional Image Header”是32位版本的“IMAGE_OPTIONAL_ HEADER32”。因為64位的Windows也採用PE結構，所以也就有了64位的PE執行檔格式。為了區別這兩種格式，Windows中把32位的PE檔案格式叫做PE32，把64位的PE檔案格式叫做PE32+。這兩種格式就像ELF32和ELF64一樣，都大同小異，只不過關於地址和長度的一些成員從32位擴充套件成了64位，還增加了若幹個額外的成員之外，沒有其他區別。“WinNT.h”裡面定義了64位版本的“Optional Image Header”，叫做“IMAGE_ OPTIONAL_HEADER64”。</p>
+<p>我們平時可以使用“IMAGE_OPTIONAL_HEADER”作為“Optional Image Header”的定義。它是一個宏，在64位的Windows下，Visual C++在編譯時會定義“_WIN64”這個宏，那麼“IMAGE_OPTIONAL_HEADER”就被定義成“IMAGE_OPTIONAL_HEADER64”；32位Windows下沒有定義“_WIN64”這個宏，那麼它就是IMAGE_OPTIONAL_HEADER32。跟ELF檔案中一樣，我們這裡只介紹32位版本的格式，64位的格式與32位區別不大。</p>
+<p>“Optional Header”裡面有很多成員，有些部分跟PE檔案的載入與執行相關。我們不打算先在這裡一一列舉所有成員的具體含義，只是挑選一部分跟靜態連結有關的加以介紹，其他的成員在本書的其他部分會再次回顧。這些成員很多都是跟Windows系統相關聯的，很多關於Windows系統的程式設計書籍上也都會有介紹，也可以在Microsoft的MSDN上找到關於它們的資訊。</p>
+<p>5.6.1 PE 資料目錄</p>
+<p>在Windows系統載入PE執行檔時，往往需要很快地找到一些載入所需要的資料結構，比如匯入表、匯出表、資源、重定位表等。這些常用的資料的位置和長度都被儲存在了一個叫資料目錄（Data Directory）的結構裡面，其實它就是前面“IMAGE_OPTIONAL_ HEADER”結構裡面的“DataDirectory”成員。這個成員是一個“IMAGE_DATA_DIRECTORY”的結構陣列，相關的定義如下：</p>
+<pre>typedef struct _IMAGE_DATA_DIRECTORY {
+    DWORD   VirtualAddress;
+    DWORD   Size;
+} IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;
+
+#define IMAGE_NUMBEROF_DIRECTORY_ENTRIES    16
+</pre>
+<p>可以看到這個陣列的大小為16，IMAGE_DATA_DIRECTORY結構有兩個成員，分別是虛擬地址以及長度。DataDirectory陣列裡面每一個元素都對應一個包含一定含義的表。“WinNT.h”裡面定義了一些以“IMAGE_DIRECTORY_ENTRY_”開頭的宏，數值從0到15，它們實際上就是相關的表的宏定義在陣列中的下標。比如“IMAGE_DIRECTORY_ENTRY_EXPORT”被定義為0，所以這個陣列的第一個元素所包含的地址和長度就是匯出表（Export Table）所在的地址和長度。</p>
+<p>這個陣列中還包含其他的表，比如匯入表、資源表、異常表、重定位表、除錯資訊表、執行緒私有儲存（TLS）等的地址和長度。這些表多數跟載入和DLL動態連結有關，與靜態連結沒什麼關係，所以我們在此不展開分析。在本書的第3部分我們會經常碰到這些表，在這裡我們只要透過解析DataDirectory結構瞭解這些表的位置和長度就可以了。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/5.5.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../chapters/5.7.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/5.5.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../chapters/5.7.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

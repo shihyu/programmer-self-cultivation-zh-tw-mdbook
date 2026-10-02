@@ -1,0 +1,239 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>序言一 - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="序言一"><a class="header" href="#序言一">序言一</a></h1>
+<p>兩年前，甲子跟我提起，他在考慮寫一本講述計算機程式基本工作原理的書，由於程式碼背後的許多細節現在難以找到完整而又實用的資料，因此，系統性地講述這些技術要素一定非常有意義。這是我非常感興趣的話題，因為最近幾年來，我每次給學生講課或作技術報告時，經常會提到程式背後的一些細節知識，而當有人請我推薦一些參考資料時，我很難想得出有什麼恰當的參考書可供學習。我自己也曾想過要寫一點這方面的書，只是一直下不了決心做這件事情。甲子的提議讓我意識到，寫這樣一本書的機會來了。於是，我們認真規劃了書的選題。按我的建議，這應該是三捲本的書，每捲獨立，合起來成一體係。第一捲是基礎篇，介紹程式的基本執行過程，即是您現在看到的這本書。其他兩捲還需要時日和機緣。</p>
+<p>在過去兩年中，我曾經以“Inside Windows Programs”為題在多所高校作過報告，旨在介紹Windows程式背後的一些支撐技術。對於正在學習計算機或軟體專業的學生，或者正在從事軟體開發的工程師們，我認為理解這些支撐技術是很有必要的。試想，即使一個簡單的“Hello World!”程式，也依賴於背後的輸入輸出庫（或流庫）及系統提供的模組，這種依賴性已經成為現代軟體在作業系統環境下執行的一個必要條件。然而，有關這些支撐技術的系統性資料卻少而又少，雖然Internet上並不缺乏任何一方面的細節資訊，但是，能將程式的編譯和執行過程所涉及的各種技術全面地串連起來介紹的，卻尚未有先例。</p>
+<p>甲子曾經在2006年夏天跟我實習過兩個月，他幫我搭建了一個在Windows已有體係結構下將交換空間重定向到遠端機器實體記憶體的原型系統。完成這一系統並非易事，而且甲子事前並無Windows核心程式設計經驗，但是，他憑借紮實的計算機系統軟體功底，成功地打通了從頁面錯誤（page fault）異常例程到遠端機器記憶體管理器之間的資料通路。在這一段實習經曆中，我不僅看到了他駕馭程式碼和系統的能力，也感受到他做事認真負責的態度。因此，當他提出要寫一本介紹程式基礎的書時，我認為他是非常合適的人選。考慮到寫書的艱巨性，他推薦石凡同學加入進來，這才有了我們三個人的組合。我原先擔心寫作的進度，畢竟寫這樣一本書需要大量的時間投入。幸運的是，在甲子和石凡的不懈努力下，這本書終於面市了。</p>
+<p>本書講解的內容，涉及在Windows和Linux兩個系統平台上，一個應用程式在編譯、連結和執行時刻所發生的各種事項，包括：程式碼指令是如何儲存的，庫檔案如何與應用程式程式碼靜態連結，應用程式如何被載入到記憶體中並開始執行，動態連結如何實現，C/C++執行庫如何工作，以及作業系統提供的系統服務是如何被呼叫的。每個技術專題都配備了大量圖示和程式碼例項，力求將複雜的機制以簡潔的形式表達出來。本書最後還提供了一個小巧且跨平台的C/C++執行庫MiniCRT，綜合展示了與執行庫相關的各種技術。</p>
+<p>關於寫作這本書的功勞，我不敢掠美。在創作之初，包括擬定提綱及甄選內容方面，我跟甲子有過認真而細致的討論；在寫作過程中，我對甲子和石凡的初稿提出過一些建議，尤其在表述方面，同時我也協助他們與編輯進行了溝通和交流。對於正文的內容，我並無實質性的貢獻，但基於我對甲子和石凡兩位年輕人的瞭解，我相信他們自身的技術實踐功底，以及足夠的技術闡釋能力。我期待這本書能夠真正地提升程式設計師的自我修養，讓程式設計師總是生活在“知其然，更知其所以然”的程式碼曼妙中。</p>
+<p>最後，我要感謝這本書的四位編輯，他們是何豔、方舟、劉鐵鋒和陳元玉，謝謝他們為這本書付出的努力。還要感謝博文視點團隊的負責人週筠女士，謝謝她給予兩位年輕作者的扶持和關愛。</p>
+<p>潘愛民</p>
+<p>2009年2月於北京微軟</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/i.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../chapters/iii.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/i.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../chapters/iii.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>6.6 Windows PE的載入 - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="66-windows-pe的載入"><a class="header" href="#66-windows-pe的載入">6.6 Windows PE的載入</a></h2>
+<p>PE檔案的載入跟ELF有所不同，由於PE檔案中，所有段的起始地址都是頁的倍數，段的長度如果不是頁的整數倍，那麼在對映時向上補齊到頁的整數倍，我們也可以簡單地認為在32位的PE檔案中，段的起始地址和長度都是4 096位元組的整數倍。由於這個特點，PE檔案的對映過程會比ELF簡單得多，因為它無須考慮如ELF裡面諸多段地址對齊之類的問題，雖然這樣會浪費一些磁碟和記憶體空間。PE執行檔的段的數量一般很少，不像ELF中經常有十多個“Section”，最後不得不使用“Segment”的概念把它們合並到一起載入，PE檔案中，連結器在生產執行檔時，往往將所有的段盡可能地合並，所以一般只有程式碼段、資料段、只讀資料段和BSS等為數不多的幾個段。</p>
+<p>PE檔案的載入跟ELF有所不同，由於PE檔案中，所有段的起始地址都是頁的倍數，段的長度如果不是頁的整數倍，那麼在對映時向上補齊到頁的整數倍，我們也可以簡單地認為在32位的PE檔案中，段的起始地址和長度都是4 096位元組的整數倍。由於這個特點，PE檔案的對映過程會比ELF簡單得多，因為它無須考慮如ELF裡面諸多段地址對齊之類的問題，雖然這樣會浪費一些磁碟和記憶體空間。PE執行檔的段的數量一般很少，不像ELF中經常有十多個“Section”，最後不得不使用“Segment”的概念把它們合並到一起載入，PE檔案中，連結器在生產執行檔時，往往將所有的段盡可能地合並，所以一般只有程式碼段、資料段、只讀資料段和BSS等為數不多的幾個段。</p>
+<p>在討論結構的具體載入過程之前，我們要先引入一個PE裡面很常見的術語叫做RVA（Relative Virtual Address），它表示一個相對虛擬地址。這個術語看起來比較晦澀難懂，其實它的概念很簡單，就是相當於檔案中的偏移量的東西。它是相對於PE檔案的載入基地址的一個偏移地址。比如，一個PE檔案被載入到虛擬地址（VA）0x00400000，那麼一個RVA為0x1000的地址就是0x00401000。每個PE檔案在載入時都會有一個載入目標地址（Target Address），這個地址就是所謂的基地址（Base Address）。由於PE檔案被設計成可以載入到任何地址，所以這個基地址並不是固定的，每次載入時都可能會變化。如果PE檔案中的地址都使用絕對地址，它們都要隨著基地址的變化而變化。但是，如果使用RVA這樣一種基於基地址的相對地址，那麼無論基地址怎麼變化，PE檔案中的各個RVA都保持一致。這裡涉及PE執行檔載入的一些內容，我們只是簡單介紹一下，更加詳細的內容將留到本書後面有關PE檔案的Rebasing機制時再進行分析。</p>
+<p>載入一個PE執行檔並且載入它，是個比ELF檔案相對簡單的過程：</p>
+<p>先讀取檔案的第一個頁，在這個頁中，包含了DOS頭、PE檔案頭和段表。</p>
+<p>檢查程式地址空間中，目標地址是否可用，如果不可用，則另外選一個載入地址。這個問題對於執行檔來說基本不存在，因為它往往是程式第一個裝入的模組，所以目標地址不太可能被佔用。主要是針對DLL檔案的載入而言的，我們在後面的“Rebasing”這一節還會具體介紹這個問題。</p>
+<p>使用段表中提供的資訊，將PE檔案中所有的段一一對映到地址空間中相應的位置。</p>
+<p>如果載入地址不是目標地址，則進行Rebasing。</p>
+<p>載入所有PE檔案所需要的DLL檔案。</p>
+<p>對PE檔案中的所有匯入符號進行解析。</p>
+<p>根據PE頭中指定的引數，建立初始化棧和堆。</p>
+<p>建立主執行緒並且啟動程式。</p>
+<p>PE檔案中，與載入相關的主要資訊都包含在PE擴充套件頭（PE Optional Header）和段表，我們在第2部分已經介紹過了PE擴充套件頭部分結構，這裡我們將選擇幾個跟載入相關的成員來分析它們的含義（見表6-6），當然還有一部分成員是跟程式初始化和執行庫有關的，我們把它們留到本書的第4部分介紹。</p>
+<p><span><img alt="" src="../images/6-0-6.jpg"/></span> <span>表6-6 …</span></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/6.5.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../chapters/6.7.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/6.5.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../chapters/6.7.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

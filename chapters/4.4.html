@@ -1,0 +1,278 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>4.4 C++相關問題 - 程式設計師的自我修養：連結、載入與函式庫</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">程式設計師的自我修養：連結、載入與函式庫</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="44-c相關問題"><a class="header" href="#44-c相關問題">4.4 C++相關問題</a></h2>
+<p>C++的一些語言特性使之必須由編譯器和連結器共同支援才能完成工作。最主要的有兩個方面，一個是C++的重複程式碼消除，還有一個就是全域性構造與析構。另外由於C++語言的各種特性，比如虛擬函式、函式過載、繼承、異常等，使得它背後的資料結構異常複雜，這些資料結構往往在不同的編譯器和連結器之間相互不能通用，使得C++程式的二進位相容性成了一個很大的問題，我們在這一節還將討論C++程式的二進位相容性問題。</p>
+<p>4.4.1 重複程式碼消除</p>
+<p>C++編譯器在很多時候會產生重複的程式碼，比如模板（Templates）、外部行內函數（Extern Inline Function）和虛擬函式表（Virtual Function Table）都有可能在不同的編譯單元裡生成相同的程式碼。最簡單的情況就拿模板來說，模板從本質上來講很像宏，當模板在一個編譯單元裡被例項化時，它並不知道自己是否在別的編譯單元也被例項化了。所以當一個模板在多個編譯單元同時例項化成相同的型別的時候，必然會生成重複的程式碼。當然，最簡單的方案就是不管這些，將這些重複的程式碼都保留下來。不過這樣做的主要問題有以下幾方面。</p>
+<p>• 空間浪費。可以想象一個有幾百個編譯單元的工程同時例項化了許多個模板，最後連結的時候必須將這些重複的程式碼消除掉，否則最終程式的大小肯定會膨脹得很厲害。</p>
+<p>• 地址較易出錯。有可能兩個指向同一個函式的指標會不相等。</p>
+<p>• 指令執行效率較低。因為現代的CPU都會對指令和資料進行快取，如果同樣一份指令有多份副本，那麼指令Cache的命中率就會降低。</p>
+<p>一個比較有效的做法就是將每個模板的例項程式碼都單獨地存放在一個段裡，每個段只包含一個模板例項。比如有個模板函式是<code>add&lt;T&gt;()，</code>某個編譯單元以int型別和float型別例項化了該模板函式，那麼該編譯單元的目的檔中就包含了兩個該模板例項的段。為了簡單起見，我們假設這兩個段的名字分別叫<code>.temp.add&lt;int&gt;</code> 和 <code>.temp.add&lt;float&gt;。</code>這樣，當別的編譯單元也以int或float型別例項化該模板函式後，也會生成同樣的名字，這樣連結器在最終連結的時候可以區分這些相同的模板例項段，然後將它們合並入最後的程式碼段。</p>
+<p>這種做法的確被目前主流的編譯器所採用，GNU GCC編譯器和VISUAL C++編譯器都採用了類似的方法。GCC把這種類似的需要在最終連結時合並的段叫“Link Once”，它的做法是將這種型別的段命名為“.gnu.linkonce.name”，其中“name”是該模板函式例項的修飾後名稱。VISUAL C++編譯器做法稍有不同，它把這種型別的段叫做“COMDAT”，這種“COMDAT”段的屬性欄位（PE檔案的段表結構裡面的IMAGE_SECTION_HEADER的Characteristics成員）都有IMAGE_SCN_LNK_COMDAT（0x00001000）這個標記，在連結器看到這個標記後，它就認為該段是COMDAT型別的，在連結時會將重複的段丟棄。</p>
+<p>這種重複程式碼消除對於模板來說是這樣的，對於外部行內函數和虛擬函式表的做法也類似。比如對於一個有虛擬函式的類來說，有一個與之相對應的虛擬函式表（Virtual Function Table，一般簡稱vtbl），編譯器會在用到該類的多個編譯單元生成虛擬函式表，造成程式碼重複；外部行內函數、預設建構函式、預設複製建構函式和賦值運算子也有類似的問題。它們的解決方式基本跟模板的重複程式碼消除類似。</p>
+<p>這種方法雖然能夠基本上解決程式碼重複的問題，但還是存在一些問題。比如相同名稱的段可能擁有不同的內容，這可能由於不同的編譯單元使用了不同的編譯器版本或者編譯最佳化選項，導致同一個函式編譯出來的實際程式碼有所不同。那麼這種情況下連結器可能會做出一個選擇，那就是隨意選擇其中任何一個副本作為連結的輸入，然後同時提供一個警告資訊。</p>
+<p>函式級別連結</p>
+<p>由於現在的程式和庫通常來講都非常龐大，一個目的檔可能包含成千上百個函式或變數。當我們需要用到某個目的檔中的任意一個函式或變數時，就需要把它整個地連結進來，也就是說那些沒有用到的函式也被一起連結了進來。這樣的後果是連結輸出檔案會變得很大，所有用到的沒用到的變數和函式都一起塞到了輸出檔案中。</p>
+<p>VISUAL C++編譯器提供了一個編譯選項叫函式級別連結（Functional-Level Linking，/Gy），這個選項的作用就是讓所有的函式都像前面模板函式一樣，單獨儲存到一個段裡面。當連結器需要用到某個函式時，它就將它合並到輸出檔案中，對於那些沒有用的函式則將它們拋棄。這種做法可以很大程度上減小輸出檔案的長度，減少空間浪費。但是這個最佳化選項會減慢編譯和連結過程，因為連結器需要計算各個函式之間的依賴關係，並且所有函式都保持到獨立的段中，目標函式的段的數量大大增加，重定位過程也會因為段的數目的增加而變得複雜，目的檔隨著段數目的增加也會變得相對較大。</p>
+<p>GCC編譯器也提供了類似的機制，它有兩個選擇分別是“-ffunction-sections”和“-fdata-sections”，這兩個選項的作用就是將每個函式或變數分別保持到獨立的段中。</p>
+<p>4.4.2 全域性構造與析構</p>
+<p>我們知道一般的一個C/C++程式是從main開始執行的，隨著main函式的結束而結束。然而，其實在main函式被呼叫之前，為了程式能夠順利執行，要先初始化程式執行環境，比如堆分配初始化（malloc、free）、執行緒子系統等，關於main之前所執行的部分，我們將在本書的第4部分詳細介紹。C++的全域性物件建構函式也是在這一時期被執行的，我們知道C++的全域性物件的建構函式在main之前被執行，C++全域性物件的解構函式在main之後被執行。</p>
+<p>Linux系統下一般程式的入口是“_start”，這個函式是Linux系統庫（Glibc）的一部分。當我們的程式與Glibc庫連結在一起形成最終執行檔以後，這個函式就是程式的初始化部分的入口，程式初始化部分完成一係列初始化過程之後，會呼叫main函式來執行程式的主體。在main函式執行完成以後，返回到初始化部分，它進行一些清理工作，然後結束程式。對於有些場合，程式的一些特定的操作必須在main函式之前被執行，還有一些操作必須在main函式之後被執行，其中很具有代表性的就是C++的全域性物件的構造和解構函式。因此ELF檔案還定義了兩種特殊的段。</p>
+<p>.init 該段裡面儲存的是可執行指令，它構成了程式的初始化程式碼。因此，當一個程式開始執行時，在main函式被呼叫之前，Glibc的初始化部分安排執行這個段的中的程式碼。</p>
+<p>.fini 該段儲存著程式終止程式碼指令。因此，當一個程式的main函式正常退出時，Glibc會安排執行這個段中的程式碼。</p>
+<p>這兩個段.init和.fini的存在有著特別的目的，如果一個函式放到.init段，在main函式執行前系統就會執行它。同理，假如一個函式放到.fint段，在main函式返回後該函式就會被執行。利用這兩個特性，C++的全域性構造和解構函式就由此實現。我們將在第11章中作詳細介紹。</p>
+<p>4.4.3 C++與ABI</p>
+<p>既然每個編譯器都能將原始碼編譯成目的檔，那麼有沒有不同編譯器編譯出來的目的檔是不能夠相互連結的呢？有沒有可能將MSVC編譯出來的目的檔和GCC編譯出來的目的檔連結到一起，形成一個執行檔呢？</p>
+<p>對於上面這些問題，首先我們可以想到的是，如果要將兩個不同編譯器的編譯結果連結到一起，那麼，首先連結器必須支援這兩個編譯器產生的目的檔的格式。比如MSVC編譯的目的檔是PE/COFF格式的，而GCC編譯的結果是ELF格式的，連結器必須同時認識這兩種格式才行，否則肯定沒戲。那是不是連結器只要同時認識目的檔的格式就可以了呢？</p>
+<p>事實並不像我們想象的那麼簡單，如果要使兩個編譯器編譯出來的目的檔能夠相互連結，那麼這兩個目的檔必須滿足下面這些條件：採用同樣的目的檔格式、擁有同樣的符號修飾標準、變數的記憶體分佈方式相同、函式的呼叫方式相同，等等。其中我們把符號修飾標準、變數記憶體佈局、函式呼叫方式等這些跟可執行程式碼二進位相容性相關的內容稱為ABI（Application Binary Interface）。</p>
+<p>ABI &amp; API</p>
+<p>很多時候我們會碰到API（Application Programming Interface）這個概念，它與ABI只有一字之差，而且非常類似，很多人經常將它們的概念搞混。那麼它們之間有什麼區別呢？實際上它們都是所謂的應用程式介面，只是它們所描述的介面所在的層面不一樣。API往往是指原始碼級別的介面，比如我們可以說POSIX是一個API標準、Windows所規定的應用程式介面是一個API；而ABI是指二進位層面的介面，ABI的相容程度比API要更為嚴格，比如我們可以說C++的物件記憶體分佈（Object Memory Layout）是C++ ABI的一部分。API更關注原始碼層面的，比如POSIX規定printf()這個函式的原型，它能保證這個函式定義在所有遵循POSIX標準的系統之間都是一樣的，但是它不保證printf在實際的每個系統中執行時，是否按照從右到左將引數壓入堆疊，引數在堆疊中如何分佈等這些實際執行時的二進位級別的問題。比如有兩台機器，一台是Intel x86，另外一台是MIPS的，它們都安裝了Linux系統，由於Linux支援POSIX標準，所以它們的C執行庫都應該有printf函式。但實際上printf在被呼叫過程中，這些關於引數和堆疊分佈的細節在不同的機器上肯定是不一樣的，甚至呼叫printf的指令也是不一樣的（x86是call指令，MIPS是jal指令），這就是說，API相同並不表示ABI相同。</p>
+<p>ABI的概念其實從開始至今一直存在，因為人們總是希望程式能夠在不經任何修改的情況下得到重用，最好的情況是二進位的指令和資料能夠不加修改地得到重用。人們始終在朝這個方向努力，但是由於現實的因素，二進位級別的重用還是很難實現。最大的問題之一就是各種硬體平台、程式語言、編譯器、連結器和作業系統之間的ABI相互不相容，由於ABI的不相容，各個目的檔之間無法相互連結，二進位相容性更加無從談起。</p>
+<p>影響ABI的因素非常多，硬體、程式語言、編譯器、連結器、作業系統等都會影響ABI。我們可以從C語言的角度來看一個程式語言是如何影響ABI的。對於C語言的目的碼來說，以下幾個方面會決定目的檔之間是否二進位相容：</p>
+<p>內建型別（如int、float、char等）的大小和在儲存器中的放置方式（大端、小端、對齊方式等）。</p>
+<p>組合型別（如struct、union、陣列等）的儲存方式和記憶體分佈。</p>
+<p>外部符號（external-linkage）與使用者定義的符號之間的命名方式和解析方式，如函式名func在C語言的目的檔中是否被解析成外部符號_func。</p>
+<p>函式呼叫方式，比如引數入棧順序、返回值如何保持等。</p>
+<p>堆疊的分佈方式，比如引數和區域性變數在堆疊裡的位置，引數傳遞方法等。</p>
+<p>暫存器使用約定，函式呼叫時哪些暫存器可以修改，哪些需要儲存，等等。</p>
+<p>當然這只是一部分因素，還有其他因素我們在此不一一列舉了。到了C++的時代，語言層面對ABI的影響又增加了很多額外的內容，可以看到，正是這些內容使C++要做到二進位相容比C來得更為不易：</p>
+<p>繼承類體係的記憶體分佈，如基類，虛基類在繼承類中的位置等。</p>
+<p>指向成員函式的指標（pointer-to-member）的記憶體分佈，如何透過指向成員函式的指標來呼叫成員函式，如何傳遞this指標。</p>
+<p>如何呼叫虛擬函式，vtable的內容和分佈形式，vtable指標在object中的位置等。</p>
+<p>template如何例項化。</p>
+<p>外部符號的修飾。</p>
+<p>全域性物件的構造和析構。</p>
+<p>異常的產生和捕獲機制。</p>
+<p>標準庫的細節問題，RTTI如何實現等。</p>
+<p>內嵌函式訪問細節。</p>
+<p>C++一直為人詬病的一大原因是它的二進位相容性不好，或者說比起C語言來更為不易。不僅不同的編譯器編譯的二進位程式碼之間無法相互相容，有時候連同一個編譯器的不同版本之間相容性也不好。比如我有一個庫A是公司Company A用Compiler A編譯的，我有另外一個庫B是公司Company B用Compiler B編譯的，當我想寫一個C++程式來同時使用庫A和B將會很是棘手。有人說，那麼我每次只要用同一個編譯器編譯所有的原始碼就能解決問題了。不錯，對於小型專案來說這個方法的確可行，但是考慮到一些大型的專案，以上的方法實際上並不可行。</p>
+<p>很多時候，庫廠商往往不希望庫使用者看到庫的原始碼，所以一般是以二進位的方式提供給使用者。這樣，當使用者的編譯器型號與版本與編譯庫所用的編譯器型號和版本不同時，就可能產生不相容。如果讓庫的廠商提供所有的編譯器型號和版本編譯出來的庫給使用者，這基本上不現實，特別是廠商對庫已經停止了維護後，使用這樣陳年老“庫”實在是一件令人頭痛的事。以上的情況對於系統中已經存在的靜態函式庫或動態函式庫需要被多個應用程式使用的情況也幾乎相同，或者一個程式由多個公司或多個部門一起開發，也有類似的問題。</p>
+<p>所以人們一直期待著能有統一的C++二進位相容標準（C++ ABI），諸多的團體和社群都在致力於C++ ABI標準的統一。但是目前情況還是不容樂觀，基本形成以微軟的VISUAL C++和GNU陣營的GCC（採用Intel Itanium C++ ABI標準）為首的兩大派係，各持己見互不相容。早先時候，*NIX系統下的ABI也十分混亂，這個情況一直延續到LSB（Linux Standard Base）和Intel的Itanium C++ ABI標準出來後才有所改善，但並未徹底解決ABI的問題，由於現實的因素，這個問題還會長期地存在，這也是為什麼有這麼多像我們這樣的程式設計師能夠存在的原因。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../chapters/4.3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../chapters/4.5.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../chapters/4.3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../chapters/4.5.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
